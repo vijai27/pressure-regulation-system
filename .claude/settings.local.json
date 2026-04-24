@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -c \":*)",
+      "Bash(pip install pypdf -q)",
+      "Bash(node --version)",
+      "Bash(find 'C:/Users/Vijai Venkatesh/Desktop/Pressure Regulation System/' -type f -name *BOM* -o -name *bom* -o -name *parts* -o -name *shopping*)",
+      "Bash(grep -r -i \"BOM\\\\|bill of materials\\\\|parts list\\\\|shopping list\\\\|part number\\\\|quantity\" 'C:/Users/Vijai Venkatesh/Desktop/Pressure Regulation System/' --include=*.py --include=*.md --include=*.txt --include=*.csv)",
+      "Bash(python:*)"
+    ]
+  }
+}
