@@ -1,4 +1,4 @@
-# hardware/simulator.py — Simulated pressure vessel for Windows testing
+# hardware/simulator.py — Simulated pressure vessel for desktop testing (Windows/macOS)
 #
 # Physics model (each SAMPLE_TIME_S step):
 #

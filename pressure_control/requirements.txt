@@ -1,4 +1,4 @@
-# Windows (simulation + development)
+# Desktop simulation (Windows + macOS)
 matplotlib>=3.8
 simple-pid>=2.0      # optional reference; we use our own PID class
 requests>=2.31       # ThingSpeak cloud upload

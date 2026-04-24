@@ -8,7 +8,7 @@ class HardwareBase(ABC):
     """Abstract interface for pressure-control hardware.
 
     Two concrete implementations exist:
-    - SimulatedHardware  (hardware/simulator.py)  — runs on Windows for testing
+    - SimulatedHardware  (hardware/simulator.py)  — runs on Windows/macOS for testing
     - RPiHardware        (hardware/rpi_hardware.py) — real Raspberry Pi hardware
 
     To switch between them, change one line in main.py.
