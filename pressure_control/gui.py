@@ -8,6 +8,7 @@
 #   Right panel:   Settings — target pressure, rates, valve bar, solenoid bar
 #   Bottom strip:  START | HOLD | DEPRESSURIZE | E-STOP
 
+import platform
 import queue
 import threading
 import time
@@ -15,6 +16,8 @@ from collections import deque
 
 import tkinter as tk
 from tkinter import ttk, font as tkfont
+
+_IS_MAC = platform.system() == "Darwin"
 
 import matplotlib
 matplotlib.use("TkAgg")
@@ -49,6 +52,13 @@ STATE_COLORS = {
 }
 
 CHART_WINDOW_S = 300   # Show last 5 minutes of data on chart
+
+
+def _btn_kw(bg: str) -> dict:
+    """On macOS, highlightbackground is what actually renders as the button color."""
+    if _IS_MAC:
+        return {"highlightbackground": bg, "highlightthickness": 2}
+    return {}
 
 # ── Shared data object (written by control thread, read by GUI) ────────────────
 class SharedData:
@@ -124,6 +134,14 @@ class App:
     def _build_ui(self):
         root = self._root
 
+        # On macOS the native aqua ttk theme ignores custom colors on Progressbar
+        # and other ttk widgets. Switching to 'clam' restores expected behavior.
+        if _IS_MAC:
+            style = ttk.Style()
+            style.theme_use("clam")
+            style.configure("TProgressbar", background=TEAL,
+                            troughcolor="#D0D4DA", thickness=14)
+
         # ── Top status bar ────────────────────────────────────────────────────
         top = tk.Frame(root, bg=NAVY, height=50)
         top.pack(fill="x")
@@ -160,19 +178,23 @@ class App:
                    "relief": "flat", "cursor": "hand2"}
 
         self._btn_start = tk.Button(bottom, text="START", bg=TEAL, fg=WHITE,
-                                    command=self._on_start, **btn_cfg)
+                                    command=self._on_start, **btn_cfg,
+                                    **_btn_kw(TEAL))
         self._btn_start.pack(side="left", padx=6)
 
         tk.Button(bottom, text="HOLD", bg=NAVY, fg=WHITE,
-                  command=self._on_hold, **btn_cfg).pack(side="left", padx=6)
+                  command=self._on_hold, **btn_cfg,
+                  **_btn_kw(NAVY)).pack(side="left", padx=6)
 
         tk.Button(bottom, text="DEPRESSURIZE", bg=AMBER, fg=NAVY,
-                  command=self._on_depressurize, **btn_cfg).pack(side="left", padx=6)
+                  command=self._on_depressurize, **btn_cfg,
+                  **_btn_kw(AMBER)).pack(side="left", padx=6)
 
         tk.Button(bottom, text="⏹ E-STOP", bg=CORAL, fg=WHITE,
                   command=self._on_estop,
                   font=("Calibri", 13, "bold"), width=14, height=2,
-                  relief="flat", cursor="hand2").pack(side="right", padx=6)
+                  relief="flat", cursor="hand2",
+                  **_btn_kw(CORAL)).pack(side="right", padx=6)
 
     def _build_left_panel(self, parent) -> tk.Frame:
         f = tk.Frame(parent, bg=WHITE, relief="flat", bd=0, width=160)
@@ -331,13 +353,13 @@ class App:
             self._temp_warn_label.config(
                 text=f"START locked until {MIN_START_TEMP_C}°C reached"
             )
-            self._btn_start.config(state="disabled", bg=GRAY)
+            self._btn_start.config(state="disabled", bg=GRAY, **_btn_kw(GRAY))
         else:
             self._var_heat_status.set("✓ Ready")
             heat_color = GREEN
             self._temp_warn_label.config(text="")
             if state == State.IDLE:
-                self._btn_start.config(state="normal", bg=TEAL)
+                self._btn_start.config(state="normal", bg=TEAL, **_btn_kw(TEAL))
 
         # Actuator bars
         self._valve_bar.set(data["valve_pct"])
