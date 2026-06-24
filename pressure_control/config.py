@@ -2,7 +2,7 @@
 # Change SIMULATION = False and fill in RPi pins when deploying to hardware.
 
 # ── Runtime mode ─────────────────────────────────────────────────────────────
-SIMULATION = True           # True = Windows sim, False = real RPi hardware
+SIMULATION = True           # True = desktop sim (Windows/macOS), False = real RPi hardware
 
 # ── Pressure limits (MPa) ────────────────────────────────────────────────────
 MAX_PRESSURE          = 28.0    # Absolute hardware maximum

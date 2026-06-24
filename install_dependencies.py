@@ -1,18 +1,18 @@
 """
 install_dependencies.py — Install all libraries required to run the scCO2
-Pressure Regulation System on Windows (simulation mode).
+Pressure Regulation System in simulation mode (Windows or macOS).
 
 Run once before launching main.py:
     python install_dependencies.py
 """
 
+import importlib
+import platform
 import subprocess
 import sys
 
 
 def pip(package: str) -> None:
-    # --user avoids permission errors on Windows; skip if already importable
-    import importlib
     module = package.split("[")[0].replace("-", "_").lower()
     try:
         importlib.import_module(module)
@@ -20,12 +20,22 @@ def pip(package: str) -> None:
         return
     except ImportError:
         pass
+    # --user avoids permission errors when not inside a virtualenv
     subprocess.check_call(
         [sys.executable, "-m", "pip", "install", "--user", package]
     )
 
 
-WINDOWS_SIM = [
+def check_tkinter() -> bool:
+    """Return True if tkinter is available, False otherwise."""
+    try:
+        import tkinter  # noqa: F401
+        return True
+    except ImportError:
+        return False
+
+
+DESKTOP_SIM = [
     "numpy",           # PR-EOS cubic solver (control/eos.py)
     "matplotlib",      # Live pressure/temperature plot in GUI (gui.py)
     "requests",        # ThingSpeak cloud upload (cloud.py)
@@ -39,11 +49,25 @@ RPI_ONLY = [
 ]
 
 if __name__ == "__main__":
+    os_name = platform.system()   # 'Windows', 'Darwin', 'Linux'
+    display_os = "macOS" if os_name == "Darwin" else os_name
+
     print("=" * 55)
     print("  scCO2 Pressure Regulation System — dependency install")
+    print(f"  Platform: {display_os} (simulation mode)")
     print("=" * 55)
 
-    for pkg in WINDOWS_SIM:
+    # macOS: tkinter ships with Python.org builds but NOT with Homebrew Python.
+    # Check early so the user can fix it before pip installs everything else.
+    if os_name == "Darwin" and not check_tkinter():
+        print("\n  WARNING: tkinter not found.")
+        print("  The GUI requires tkinter.  Install it with Homebrew:")
+        print("    brew install python-tk")
+        print("  Then re-run this script.")
+        print("=" * 55)
+        sys.exit(1)
+
+    for pkg in DESKTOP_SIM:
         print(f"\n>>> Installing {pkg} ...")
         try:
             pip(pkg)

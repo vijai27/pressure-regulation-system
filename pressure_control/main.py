@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # main.py — Entry point for the High-Pressure Vessel Control System
 #
-# Usage (Windows simulation):
+# Usage (desktop simulation — Windows or macOS):
 #   cd pressure_control
 #   python main.py
 #
@@ -16,6 +16,7 @@
 #   - Logger writes CSV every 100 ms from the control thread
 
 import logging
+import platform
 import sys
 import threading
 import time
@@ -39,7 +40,9 @@ def build_hardware():
     """Instantiate the correct hardware backend."""
     if SIMULATION:
         from hardware.simulator import SimulatedHardware
-        log.info("Mode: SIMULATION (Windows)")
+        _os = platform.system()
+        os_label = "macOS" if _os == "Darwin" else _os
+        log.info("Mode: SIMULATION (%s)", os_label)
         return SimulatedHardware()
     else:
         from hardware.rpi_hardware import RPiHardware

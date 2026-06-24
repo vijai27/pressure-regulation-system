@@ -28,17 +28,17 @@ All cylinders are from Metro Welding Supply, Detroit MI 48223.
 ## Current Status
 
 ### ✅ Complete
-- Full Python control app (`pressure_control/`) — 13 files, runs in simulation on Windows
+- Full Python control app (`pressure_control/`) — 13 files, runs in simulation on Windows and macOS
 - Peng-Robinson EOS for real CO₂ physics (`control/eos.py`)
 - Adaptive gain scheduler (`control/gain_scheduler.py`) — gains change with pressure
-- Windows physics simulator (`hardware/simulator.py`) — 10 Hz, uses PR-EOS
+- Desktop physics simulator (`hardware/simulator.py`) — 10 Hz, uses PR-EOS, runs on Windows/macOS
 - Tkinter + Matplotlib live GUI (`gui.py`)
 - CSV data logger (`logger.py`)
 - ThingSpeak cloud uploader (`cloud.py`)
 - Simulink MATLAB scripts (`simulink/`) — digital twin, not yet tested
 - PowerPoint deck (`scCO2_System_Presentation.pptx`) — for professor
 - Schematic diagram (`scCO2_Schematic.png`) — P&ID style
-- `install_dependencies.py` — one-shot Windows setup
+- `install_dependencies.py` — one-shot setup for Windows and macOS
 - `make_ppt.js` / `make_schematic.py` — regenerate deliverables
 
 ### 🔴 Immediate Next (blocking hardware deployment)
@@ -96,7 +96,7 @@ All cylinders are from Metro Welding Supply, Detroit MI 48223.
 ### Controller
 - Raspberry Pi 4
 - Python 3.11
-- `SIMULATION = True` in `config.py` for Windows testing
+- `SIMULATION = True` in `config.py` for desktop testing (Windows/macOS)
 - `SIMULATION = False` for real RPi deployment
 
 ### Other Electronics
@@ -108,11 +108,28 @@ All cylinders are from Metro Welding Supply, Detroit MI 48223.
 
 ---
 
-## How to Run (Windows Simulation)
+## How to Run (Desktop Simulation — Windows or macOS)
+
+### macOS
+
+```bash
+# Prerequisites (one time — only needed if using Homebrew Python)
+brew install python-tk   # tkinter is not bundled with Homebrew Python
+
+# Install Python dependencies (one time)
+cd '/Users/you/Desktop/Pressure Regulation System'
+python3 install_dependencies.py
+
+# Run the app
+cd pressure_control
+python3 main.py
+```
+
+### Windows
 
 ```bash
 # Install dependencies (one time)
-cd "C:/path/to/Pressure Regulation System"
+cd "C:\path\to\Pressure Regulation System"
 python install_dependencies.py
 
 # Run the app
@@ -120,7 +137,7 @@ cd pressure_control
 python main.py
 ```
 
-`SIMULATION = True` is set in `config.py`. No hardware needed.
+`SIMULATION = True` is set in `config.py`. No hardware needed on either platform.
 The GUI opens with a live pressure/temperature plot and START/STOP buttons.
 
 ---
@@ -130,7 +147,7 @@ The GUI opens with a live pressure/temperature plot and START/STOP buttons.
 ```
 Pressure Regulation System/
 ├── CLAUDE.md                        ← YOU ARE HERE
-├── install_dependencies.py          ← pip install for Windows sim
+├── install_dependencies.py          ← pip install for Windows/macOS sim
 ├── make_ppt.js                      ← regenerates PowerPoint (node make_ppt.js)
 ├── make_schematic.py                ← regenerates P&ID schematic (python)
 ├── scCO2_System_Presentation.pptx   ← 10-slide professor deck
@@ -145,7 +162,7 @@ Pressure Regulation System/
 │   │
 │   ├── hardware/
 │   │   ├── base.py                  ← Abstract HAL interface (do not edit)
-│   │   ├── simulator.py             ← Windows physics sim (PR-EOS, 10 Hz thread)
+│   │   ├── simulator.py             ← Desktop physics sim (PR-EOS, 10 Hz thread, Windows/macOS)
 │   │   └── rpi_hardware.py          ← RPi stub — NEEDS COMPLETING (see below)
 │   │
 │   └── control/
@@ -169,7 +186,7 @@ Pressure Regulation System/
 `SimulatedHardware` and `RPiHardware` both inherit from `HardwareBase`.
 To switch between simulation and real hardware, change ONE line in `main.py`:
 ```python
-hw = SimulatedHardware()   # Windows
+hw = SimulatedHardware()   # Windows / macOS
 hw = RPiHardware()          # Raspberry Pi
 ```
 The `SIMULATION` flag in `config.py` controls which one `main.py` picks.
@@ -287,10 +304,11 @@ The file has all code written but commented out. Steps:
 
 ---
 
-## Windows Encoding Note
+## Encoding Note
 
-Always open Python files with `encoding='utf-8'` on Windows.
-The default cp1252 breaks on °C, CO₂ subscripts, and similar Unicode characters.
+Always open Python files with `encoding='utf-8'`.
+On Windows the default encoding (cp1252) breaks on °C, CO₂ subscripts, and similar Unicode characters.
+macOS defaults to UTF-8, so this is only a concern on Windows.
 
 ---
 
