@@ -1,0 +1,510 @@
+<title>scCO₂ System P&ID Schematic</title>
+<style>
+:root {
+  --bg:          #EAF0F7;
+  --surface:     #FFFFFF;
+  --text:        #1A2540;
+  --dim:         #6B7A99;
+  --grid:        rgba(100,120,160,0.12);
+  --pipe:        #2C3E6B;
+  --ctrl:        #7C3AED;
+  --owned-f:     #D1FAE5;
+  --owned-s:     #059669;
+  --owned-t:     #065F46;
+  --hw-f:        #FEF3C7;
+  --hw-s:        #D97706;
+  --hw-t:        #78350F;
+  --el-f:        #DBEAFE;
+  --el-s:        #2563EB;
+  --el-t:        #1E3A8A;
+  --panel:       rgba(255,255,255,0.7);
+  --tip-bg:      #FFFFFF;
+  --tip-border:  #CBD5E1;
+}
+@media (prefers-color-scheme: dark) { :root {
+  --bg:      #0D1829;  --surface:  #111D33;
+  --text:    #E2EAFF;  --dim:      #7A8BAD;
+  --grid:    rgba(100,140,220,0.08);
+  --pipe:    #7A99CC;  --ctrl:     #A78BFA;
+  --owned-f: #064E3B;  --owned-s:  #34D399;  --owned-t: #A7F3D0;
+  --hw-f:    #451A03;  --hw-s:     #FBBF24;  --hw-t:    #FDE68A;
+  --el-f:    #1E1B4B;  --el-s:     #60A5FA;  --el-t:    #BFDBFE;
+  --panel:   rgba(17,29,51,0.8);
+  --tip-bg:  #1E293B;  --tip-border: #334155;
+}}
+:root[data-theme="light"] {
+  --bg:#EAF0F7; --surface:#FFFFFF; --text:#1A2540; --dim:#6B7A99; --grid:rgba(100,120,160,0.12);
+  --pipe:#2C3E6B; --ctrl:#7C3AED;
+  --owned-f:#D1FAE5; --owned-s:#059669; --owned-t:#065F46;
+  --hw-f:#FEF3C7;   --hw-s:#D97706;   --hw-t:#78350F;
+  --el-f:#DBEAFE;   --el-s:#2563EB;   --el-t:#1E3A8A;
+  --panel:rgba(255,255,255,0.7); --tip-bg:#FFFFFF; --tip-border:#CBD5E1;
+}
+:root[data-theme="dark"] {
+  --bg:#0D1829; --surface:#111D33; --text:#E2EAFF; --dim:#7A8BAD; --grid:rgba(100,140,220,0.08);
+  --pipe:#7A99CC; --ctrl:#A78BFA;
+  --owned-f:#064E3B; --owned-s:#34D399; --owned-t:#A7F3D0;
+  --hw-f:#451A03;   --hw-s:#FBBF24;   --hw-t:#FDE68A;
+  --el-f:#1E1B4B;   --el-s:#60A5FA;   --el-t:#BFDBFE;
+  --panel:rgba(17,29,51,0.8); --tip-bg:#1E293B; --tip-border:#334155;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);font-family:'Courier New',monospace;padding:16px 20px;min-height:100vh}
+.header{margin-bottom:14px}
+.eyebrow{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-bottom:3px}
+h1{font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.01em}
+.wrap{width:100%;overflow-x:auto;background:var(--surface);border-radius:6px;border:1px solid var(--grid)}
+svg{display:block;min-width:1280px}
+#tip{position:fixed;background:var(--tip-bg);border:1px solid var(--tip-border);border-radius:5px;
+  padding:9px 13px;font-size:11px;line-height:1.65;pointer-events:none;z-index:99;
+  max-width:240px;display:none;color:var(--text);box-shadow:0 6px 20px rgba(0,0,0,.18)}
+#tip strong{display:block;margin-bottom:2px;font-size:11.5px}
+#tip .pn{color:var(--dim);font-size:10px}
+#tip .st{font-size:10.5px;margin-top:4px;font-weight:bold}
+.owned-st{color:var(--owned-s)} .hw-st{color:var(--hw-s)} .el-st{color:var(--el-s)}
+</style>
+
+<div class="header">
+  <div class="eyebrow">scCO₂ Automated Pressure Regulation System — University of Michigan</div>
+  <h1>Process &amp; Instrumentation Diagram</h1>
+</div>
+<div class="wrap">
+  <svg id="S" viewBox="0 0 1320 800" xmlns="http://www.w3.org/2000/svg"></svg>
+</div>
+<div id="tip"></div>
+
+<script>
+const S = document.getElementById('S');
+const tip = document.getElementById('tip');
+const ns = 'http://www.w3.org/2000/svg';
+const cv = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+
+// ── tiny SVG helpers ──────────────────────────────────────────────────────────
+const mk = (tag, a={}) => { const e=document.createElementNS(ns,tag); for(const[k,v] of Object.entries(a)) e.setAttribute(k,v); return e; };
+const grp = (a={}) => mk('g',a);
+const ln  = (x1,y1,x2,y2,s,w=2.5,d='') => mk('line',{x1,y1,x2,y2,stroke:s,'stroke-width':w,'stroke-dasharray':d,'stroke-linecap':'round'});
+const rc  = (x,y,w,h,f,s,sw=1.8,rx=4) => mk('rect',{x,y,width:w,height:h,fill:f,stroke:s,'stroke-width':sw,rx});
+const ci  = (cx,cy,r,f,s,sw=1.8) => mk('circle',{cx,cy,r,fill:f,stroke:s,'stroke-width':sw});
+const tx  = (x,y,t,sz=9,f,a='middle',w='normal') => { const e=mk('text',{x,y,'font-size':sz,fill:f||cv('--text'),'text-anchor':a,'font-weight':w,'font-family':"'Courier New',monospace",'dominant-baseline':'middle'}); e.textContent=t; return e; };
+const pg  = (pts,f,s,sw=1.8) => mk('polygon',{points:pts.map(([x,y])=>`${x},${y}`).join(' '),fill:f,stroke:s,'stroke-width':sw});
+const pl  = (pts,s,w=2.5) => mk('polyline',{points:pts.map(([x,y])=>`${x},${y}`).join(' '),fill:'none',stroke:s,'stroke-width':w,'stroke-linecap':'round','stroke-linejoin':'round'});
+
+const OWNED='owned', HW='hw', EL='el';
+const C = (st) => ({
+  owned:{ f:()=>cv('--owned-f'), s:()=>cv('--owned-s'), t:()=>cv('--owned-t'), tag:'✓ OWNED', cls:'owned-st' },
+  hw:   { f:()=>cv('--hw-f'),    s:()=>cv('--hw-s'),    t:()=>cv('--hw-t'),    tag:'⬤ TO PURCHASE', cls:'hw-st' },
+  el:   { f:()=>cv('--el-f'),    s:()=>cv('--el-s'),    t:()=>cv('--el-t'),    tag:'⬤ TO PURCHASE', cls:'el-st' },
+}[st]);
+
+// Tooltip
+function tip_on(el,info){
+  el.style.cursor='crosshair';
+  el.addEventListener('mouseenter', e=>{
+    const c=C(info.st);
+    tip.innerHTML=`<strong>${info.name}</strong><div class="pn">${info.part||''}</div>
+      <div style="margin-top:3px">${info.spec||''}</div>
+      <div class="st ${c.cls}">${c.tag}${info.price?'  '+info.price:''}</div>`;
+    tip.style.display='block';
+  });
+  el.addEventListener('mousemove',e=>{ tip.style.left=(e.clientX+14)+'px'; tip.style.top=(e.clientY+12)+'px'; });
+  el.addEventListener('mouseleave',()=>{ tip.style.display='none'; });
+}
+
+// Arrow head on a line end
+function arrowHead(x,y,dir,color){
+  // dir: 'r','l','u','d'
+  const a=6, b=5;
+  const map={r:[[x,y],[x-a,y-b],[x-a,y+b]],l:[[x,y],[x+a,y-b],[x+a,y+b]],u:[[x,y],[x-b,y+a],[x+b,y+a]],d:[[x,y],[x-b,y-a],[x+b,y-a]]};
+  return pg(map[dir],color,color,0);
+}
+
+// ── Component drawers ─────────────────────────────────────────────────────────
+
+function gasCylinder(x,y,st,info){
+  const c=C(st); const g=grp(); const W=48,H=130;
+  g.appendChild(rc(x-W/2,y-H/2,W,H,c.f(),c.s(),2.2,5));
+  g.appendChild(mk('ellipse',{cx:x,cy:y-H/2,rx:W/2-1,ry:9,fill:c.s(),stroke:c.s(),'stroke-width':1.5}));
+  g.appendChild(rc(x-7,y-H/2-18,14,18,c.s(),c.s(),1.2,2));
+  info.label.split('\n').forEach((l,i)=>g.appendChild(tx(x,y-10+i*13,l,8.5,c.t(),'middle','bold')));
+  g.appendChild(tx(x,y+H/2+13,c.tag,7.5,c.s()));
+  tip_on(g,{...info,st}); return g;
+}
+
+function boosterBox(x,y,w,h,st,info){
+  const c=C(st); const g=grp();
+  g.appendChild(rc(x,y,w,h,c.f(),c.s(),2.5,5));
+  const cx=x+w/2, cy=y+h*0.38;
+  g.appendChild(ci(cx,cy,20,'none',c.s(),2));
+  // pump impeller
+  [-40,80,200].forEach(deg=>{
+    const r=deg*Math.PI/180;
+    const ix=cx+15*Math.cos(r), iy=cy+15*Math.sin(r);
+    const jx=cx+7*Math.cos(r+.6), jy=cy+7*Math.sin(r+.6);
+    g.appendChild(ln(cx,cy,ix,iy,c.s(),2));
+  });
+  info.label.split('\n').forEach((l,i)=>g.appendChild(tx(x+w/2,y+h*.68+i*12,l,8.5,c.t(),'middle',i===0?'bold':'normal')));
+  g.appendChild(tx(x+w/2,y+h-9,c.tag,7.5,c.s()));
+  tip_on(g,{...info,st}); return g;
+}
+
+function ballValve(x,y,st,info){
+  const c=C(st); const g=grp();
+  g.appendChild(ci(x,y,13,c.f(),c.s(),2));
+  g.appendChild(ln(x-9,y,x+9,y,c.s(),2.8));
+  g.appendChild(ln(x,y-13,x,y-24,c.s(),2));
+  g.appendChild(ln(x-9,y-24,x+9,y-24,c.s(),3));
+  tip_on(g,{...info,st}); return g;
+}
+
+function checkValve(x,y,st,info){
+  const c=C(st); const g=grp();
+  g.appendChild(pg([[x-14,y-13],[x+10,y],[x-14,y+13]],c.f(),c.s(),2));
+  g.appendChild(ln(x+10,y-15,x+10,y+15,c.s(),3));
+  tip_on(g,{...info,st}); return g;
+}
+
+function needleValve(x,y,motorized,st,info){
+  const c=C(st); const g=grp();
+  g.appendChild(pg([[x-15,y-11],[x,y],[x-15,y+11]],c.f(),c.s(),2));
+  g.appendChild(pg([[x+15,y-11],[x,y],[x+15,y+11]],c.f(),c.s(),2));
+  g.appendChild(ln(x,y-1,x,y-20,c.s(),2));
+  if(motorized){
+    g.appendChild(ci(x,y-34,16,c.f(),c.s(),2));
+    g.appendChild(tx(x,y-34,'M',9.5,c.t(),'middle','bold'));
+  }
+  tip_on(g,{...info,st}); return g;
+}
+
+function instrument(x,y,type,st,info){
+  const c=C(st); const g=grp();
+  // Diamond shape
+  g.appendChild(pg([[x,y-18],[x+16,y],[x,y+18],[x-16,y]],c.f(),c.s(),2));
+  g.appendChild(tx(x,y-4,type,8.5,c.t(),'middle','bold'));
+  g.appendChild(ln(x,y+18,x,y+28,c.s(),2));
+  tip_on(g,{...info,st}); return g;
+}
+
+function reliefValve(x,y,st,info){
+  const c=C(st); const g=grp();
+  g.appendChild(rc(x-13,y-14,26,24,c.f(),c.s(),2,2));
+  // spring lines
+  for(let i=0;i<3;i++) g.appendChild(ln(x-7+i*7,y-14,x-7+i*7,y+10,c.s(),1));
+  g.appendChild(ln(x,y-14,x,y-28,c.s(),2));
+  g.appendChild(arrowHead(x,y-28,'u',c.s()));
+  g.appendChild(tx(x,y+18,'RV',8,c.t(),'middle','bold'));
+  tip_on(g,{...info,st}); return g;
+}
+
+function solenoidValve(x,y,st,info){
+  const c=C(st); const g=grp();
+  g.appendChild(rc(x-18,y-12,36,24,c.f(),c.s(),2,3));
+  // coil symbol on top
+  g.appendChild(ln(x-14,y-12,x-14,y-22,c.s(),1.5));
+  g.appendChild(ln(x-14,y-22,x+14,y-22,c.s(),1.5));
+  g.appendChild(ln(x+14,y-22,x+14,y-12,c.s(),1.5));
+  for(let i=-8;i<=8;i+=4) g.appendChild(ln(x+i,y-12,x+i+2,y-22,c.s(),1));
+  g.appendChild(tx(x,y+2,'SOL',8,c.t(),'middle','bold'));
+  tip_on(g,{...info,st}); return g;
+}
+
+function vessel(x,y,w,h,st,info){
+  const c=C(st); const g=grp();
+  g.appendChild(rc(x,y,w,h,c.f(),c.s(),2.8,6));
+  g.appendChild(mk('ellipse',{cx:x+w/2,cy:y,rx:w/2-1,ry:13,fill:c.s(),stroke:c.s(),'stroke-width':2}));
+  g.appendChild(mk('ellipse',{cx:x+w/2,cy:y+h,rx:w/2-1,ry:13,fill:c.f(),stroke:c.s(),'stroke-width':2}));
+  info.label.split('\n').forEach((l,i)=>g.appendChild(tx(x+w/2,y+h/2-13+i*14,l,8.5,c.t(),'middle',i===0?'bold':'normal')));
+  g.appendChild(tx(x+w/2,y+h-14,c.tag,7.5,c.s()));
+  tip_on(g,{...info,st}); return g;
+}
+
+function inkbird(x,y,w,h,st,info){
+  const c=C(st); const g=grp();
+  g.appendChild(rc(x,y,w,h,c.f(),c.s(),2,4));
+  // heating element squiggle
+  const cx2=x+w/2;
+  g.appendChild(mk('path',{d:`M${x+8},${y+12} Q${cx2},${y+6} ${x+w-8},${y+12}`,fill:'none',stroke:c.s(),'stroke-width':1.8}));
+  info.label.split('\n').forEach((l,i)=>g.appendChild(tx(x+w/2,y+24+i*13,l,8.5,c.t(),'middle',i===0?'bold':'normal')));
+  g.appendChild(tx(x+w/2,y+h-8,c.tag,7.5,c.s()));
+  tip_on(g,{...info,st}); return g;
+}
+
+function elecBox(x,y,w,h,st,info){
+  const c=C(st); const g=grp();
+  g.appendChild(rc(x,y,w,h,c.f(),c.s(),2,4));
+  g.appendChild(ln(x+6,y+9,x+w-6,y+9,c.s(),.7));
+  g.appendChild(ln(x+6,y+17,x+w-6,y+17,c.s(),.7));
+  info.label.split('\n').forEach((l,i)=>g.appendChild(tx(x+w/2,y+30+i*13,l,8.5,c.t(),'middle',i===0?'bold':'normal')));
+  g.appendChild(tx(x+w/2,y+h-8,c.tag,7,c.s()));
+  tip_on(g,{...info,st}); return g;
+}
+
+// ── DRAW ─────────────────────────────────────────────────────────────────────
+function draw(){
+  S.innerHTML='';
+
+  const P=cv('--pipe'), CT=cv('--ctrl'), DM=cv('--dim'), TXT=cv('--text'), BG=cv('--surface'), GR=cv('--grid');
+
+  // BG + grid
+  S.appendChild(rc(0,0,1320,800,cv('--bg'),'none',0,0));
+  const gg=grp();
+  for(let x=0;x<=1320;x+=40) gg.appendChild(ln(x,0,x,800,GR,.5));
+  for(let y=0;y<=800;y+=40) gg.appendChild(ln(0,y,1320,y,GR,.5));
+  S.appendChild(gg);
+
+  // ── TITLE BLOCK ────────────────────────────────────────────────────────────
+  S.appendChild(tx(18,18,'scCO₂ PRESSURE REGULATION SYSTEM — P&ID SCHEMATIC',11,TXT,'start','bold'));
+  S.appendChild(tx(18,34,'PARR 2302HC | HII 5G-TD-28/150-CO2 | RPi PID Control | 28 MPa Max',8.5,DM,'start'));
+
+  // ── LEGEND ─────────────────────────────────────────────────────────────────
+  const LX=980, LY=12;
+  S.appendChild(rc(LX-6,LY-4,332,112,BG,GR,1,4));
+  S.appendChild(tx(LX,LY+10,'LEGEND',8.5,DM,'start','bold'));
+  const legItems=[
+    {f:cv('--owned-f'),s:cv('--owned-s'),label:'Already Owned'},
+    {f:cv('--hw-f'),  s:cv('--hw-s'),  label:'To Purchase — Hardware'},
+    {f:cv('--el-f'),  s:cv('--el-s'),  label:'To Purchase — Electronics'},
+  ];
+  legItems.forEach((it,i)=>{
+    const y=LY+26+i*22;
+    S.appendChild(rc(LX,y,16,12,it.f,it.s,1.5,2));
+    S.appendChild(tx(LX+23,y+7,it.label,9,TXT,'start'));
+  });
+  const cy2=LY+26+3*22;
+  S.appendChild(ln(LX,cy2+6,LX+16,cy2+6,CT,2,'5,3'));
+  S.appendChild(tx(LX+23,cy2+7,'Control / Signal Line',9,TXT,'start'));
+  S.appendChild(ln(LX,cy2+20,LX+16,cy2+20,P,2.5));
+  S.appendChild(tx(LX+23,cy2+21,'Process Line (HP CO₂)',9,TXT,'start'));
+
+  // ── COORDINATE CONSTANTS ───────────────────────────────────────────────────
+  const FY=295; // main flow Y
+  const VY=470; // vent line Y
+
+  // ── GAS SUPPLY ─────────────────────────────────────────────────────────────
+  S.appendChild(gasCylinder(68,165,OWNED,{
+    name:'Drive Air Cylinder',part:'UN1002 Dry Grade',
+    spec:'Compressed air — drives booster pump only, never enters vessel',
+    label:'AIR\nUN1002\nDrive Gas'
+  }));
+  S.appendChild(gasCylinder(68,390,OWNED,{
+    name:'CO₂ Gas Cylinder',part:'UN1013 Bone Dry',
+    spec:'Primary process gas — Metro Welding Supply, Detroit MI',
+    label:'CO₂\nUN1013\nProcess Gas'
+  }));
+
+  // Air → booster pipe
+  S.appendChild(pl([[68,100],[68,74],[170,74],[170,238]],P,2));
+  // CO2 → booster pipe
+  S.appendChild(pl([[68,325],[68,500],[178,500],[178,368]],P,2));
+  S.appendChild(tx(118,68,'DRIVE AIR (LP)',7.5,DM));
+  S.appendChild(tx(122,508,'CO₂ SUPPLY (LP)',7.5,DM));
+
+  // ── BOOSTER ─────────────────────────────────────────────────────────────────
+  S.appendChild(boosterBox(150,238,145,130,OWNED,{
+    name:'Gas Booster Pump',part:'HII 5G-TD-28/150-CO2 | S/N 1205101',
+    spec:'Air-driven, twin-drive. Max outlet 172 MPa.\nSimulated as 50 MPa fixed supply pressure.',
+    label:'HII 5G-TD\n28/150-CO2\nGas Booster'
+  }));
+  // HP outlet pipe from booster right edge
+  S.appendChild(ln(295,FY,330,FY,P,3));
+  S.appendChild(tx(312,FY-11,'HP CO₂',7.5,DM));
+
+  // ── CHECK VALVE x=352 ────────────────────────────────────────────────────────
+  S.appendChild(checkValve(352,FY,HW,{
+    name:'Check Valve',part:'Swagelok SS-CHS4-5',
+    spec:'316SS, 6,000 PSI, 1/4" tube, 5 PSI cracking pressure\n⚠ Do NOT substitute SS-4C (only 3,000 PSI)',
+    price:'~$100'
+  }));
+  S.appendChild(ln(330,FY,338,FY,P,3));
+  S.appendChild(ln(363,FY,395,FY,P,3));
+  S.appendChild(tx(352,FY+28,'CHK',7.5,DM));
+
+  // ── BALL VALVE 1 x=415 ───────────────────────────────────────────────────────
+  S.appendChild(ballValve(415,FY,HW,{
+    name:'Ball Valve #1 — HP Isolation (booster outlet)',part:'Swagelok SS-83KS4',
+    spec:'316SS, 6,000 PSI, PCTFE seats, CO₂ compatible\n⚠ Do NOT substitute SS-43GS4 (only 3,000 PSI)',
+    price:'~$407'
+  }));
+  S.appendChild(ln(395,FY,402,FY,P,3));
+  S.appendChild(ln(428,FY,465,FY,P,3));
+  S.appendChild(tx(415,FY+28,'BV-1',7.5,DM));
+
+  // ── INSTRUMENTATION TEE x=490 ────────────────────────────────────────────────
+  // Tee branch going up
+  S.appendChild(pl([[465,FY],[540,FY]],P,3));
+  S.appendChild(ln(490,FY,490,180,P,2));
+  // dot at tee
+  S.appendChild(ci(490,FY,4,P,P,0));
+
+  // Pressure Transducer
+  S.appendChild(instrument(490,155,PT='PT',HW,{
+    name:'Pressure Transducer',part:'Ashcroft K4708',
+    spec:'0–5000 PSI, 4–20 mA, SS body, IP67\nADS1115 A0 via 250Ω shunt resistor → 1–5V',
+    price:'~$400'
+  }));
+  S.appendChild(tx(490,128,'K4708',7.5,DM));
+
+  // Pressure Gauge offset right on same tee branch
+  S.appendChild(ln(490,180,565,180,P,2));
+  S.appendChild(instrument(565,155,'PG',HW,{
+    name:'Pressure Gauge (Mechanical)',part:'Ashcroft K4201',
+    spec:'0–5000 PSI analog dial gauge — visual backup, independent of electronics',
+    price:'~$100'
+  }));
+  S.appendChild(tx(565,128,'K4201',7.5,DM));
+
+  // ── MOTORIZED NEEDLE VALVE x=620 ─────────────────────────────────────────────
+  S.appendChild(needleValve(620,FY,true,HW,{
+    name:'Motorized Needle Valve',part:'Swagelok SS-1RS4 + NEMA 17 stepper',
+    spec:'316SS, 5,000 PSI, Cv=0.37, 1/4" tube\nA4988 at 1/16 step, GPIO 17/27/22',
+    price:'~$330 (valve+motor+coupler)'
+  }));
+  S.appendChild(ln(540,FY,605,FY,P,3));
+  S.appendChild(ln(635,FY,670,FY,P,3));
+  S.appendChild(tx(620,FY+46,'NV-1 (MOTORIZED)',7.5,DM));
+  S.appendChild(tx(620,FY+56,'SS-1RS4 + NEMA17',7,DM));
+
+  // flow arrows on HP line
+  [[340,FY,'r'],[450,FY,'r'],[570,FY,'r'],[650,FY,'r']].forEach(([x,y,d])=>S.appendChild(arrowHead(x,y,d,P)));
+
+  // ── BALL VALVE 2 x=690 ───────────────────────────────────────────────────────
+  S.appendChild(ballValve(690,FY,HW,{
+    name:'Ball Valve #2 — Vessel Inlet Isolation',part:'Swagelok SS-83KS4',
+    spec:'316SS, 6,000 PSI, PCTFE seats, CO₂ compatible',
+    price:'~$407'
+  }));
+  S.appendChild(ln(670,FY,677,FY,P,3));
+  S.appendChild(ln(703,FY,740,FY,P,3));
+  S.appendChild(tx(690,FY+28,'BV-2',7.5,DM));
+
+  // Pipe into vessel top
+  S.appendChild(pl([[740,FY],[820,FY],[820,196]],P,3));
+  S.appendChild(arrowHead(820,212,'d',P));
+
+  // ── PARR VESSEL x=790 ──────────────────────────────────────────────────────
+  S.appendChild(vessel(780,196,110,240,OWNED,{
+    name:'Pressure Vessel',part:'PARR 2302HC | S/N 4540-1803-78845A',
+    spec:'Volume: 1 L, Material: 316SS\nMAWP: 5,000 PSI (34.47 MPa) @ 350°C\nOperating max: 28 MPa (18.7% safety margin)',
+    label:'PARR\n2302HC\n1 L | 316SS\n5000 PSI'
+  }));
+
+  // ── INKBIRD heater (right of vessel) ─────────────────────────────────────────
+  S.appendChild(inkbird(914,230,110,90,OWNED,{
+    name:'INKBIRD Temperature Controller',part:'INKBIRD',
+    spec:'Setpoint: 60°C (above CO₂ Tc=31.1°C)\nSettled stability: ±0.01°C\nHeats vessel so CO₂ enters supercritical phase',
+    label:'INKBIRD\n60°C Setpoint\n±0.01°C'
+  }));
+  // heating wire to vessel
+  S.appendChild(ln(914,275,890,275,cv('--owned-s'),1.5,'4,3'));
+
+  // ── RELIEF VALVE (top of vessel right side) ───────────────────────────────────
+  S.appendChild(reliefValve(940,212,HW,{
+    name:'Relief Valve (Safety)',part:'Parker 442F42',
+    spec:'316SS, 1/4" MNPT, spring-loaded\nProtects vessel from accidental overpressure',
+    price:'~$165'
+  }));
+  S.appendChild(ln(890,208,926,208,P,2));
+  S.appendChild(tx(940,164,'RV',8,DM));
+
+  // HP label bar
+  S.appendChild(rc(316,274,464,16,BG,GR,.5,2));
+  S.appendChild(tx(548,282,'HIGH PRESSURE CO₂ LINE — UP TO 28 MPa (4,061 PSI)',7.5,DM));
+
+  // ── VENT LINE ─────────────────────────────────────────────────────────────────
+  // Vessel bottom → vent
+  S.appendChild(pl([[835,436],[835,VY]],P,2.5));
+  S.appendChild(arrowHead(835,VY,'d',P));
+  S.appendChild(ln(835,VY,810,VY,P,2.5));
+
+  // BV3
+  S.appendChild(ballValve(790,VY,HW,{
+    name:'Ball Valve #3 — Vent Isolation',part:'Swagelok SS-83KS4',
+    spec:'316SS, 6,000 PSI, PCTFE seats\nIsolates vent/depressurize line',
+    price:'~$407'
+  }));
+  S.appendChild(ln(776,VY,745,VY,P,2.5));
+  S.appendChild(tx(790,VY+30,'BV-3',7.5,DM));
+
+  // Solenoid
+  S.appendChild(solenoidValve(710,VY,HW,{
+    name:'Vent Solenoid Valve',part:'24VDC relay-driven solenoid',
+    spec:'GPIO 18 hardware PWM on Raspberry Pi\nControls depressurize rate (0–100% duty)',
+    price:'~$10'
+  }));
+  S.appendChild(ln(692,VY,655,VY,P,2.5));
+  S.appendChild(tx(710,VY+30,'SOL-1',7.5,DM));
+
+  // Vent exhaust arrow
+  S.appendChild(ln(655,VY,600,VY,P,2.5));
+  S.appendChild(arrowHead(600,VY,'l',P));
+  S.appendChild(tx(590,VY-11,'VENT / EXHAUST',8,DM,'end'));
+
+  S.appendChild(tx(700,VY-28,'DEPRESSURIZE LINE',7.5,DM));
+  // vent flow arrows
+  [[830,VY,'l'],[760,VY,'l']].forEach(([x,y,d])=>S.appendChild(arrowHead(x,y,d,P)));
+
+  // ── ELECTRONICS PANEL ─────────────────────────────────────────────────────────
+  const EP=568, EX=150;
+  S.appendChild(rc(EX-10,EP-18,1030,195,cv('--panel'),GR,1,6));
+  S.appendChild(tx(EX,EP-4,'CONTROL ELECTRONICS PANEL',8.5,DM,'start','bold'));
+
+  const EW=115,EH=130;
+  const elBoxes=[
+    { x:EX,   info:{name:'DIN Rail Power Supply',part:'Dayton 33NT20',spec:'24VDC, 50W output\nPowers all control electronics, relay, solenoid',price:'~$55',label:'24VDC PSU\nDayton 33NT20\n50W'} },
+    { x:EX+140,info:{name:'Raspberry Pi 4 (4 GB)',part:'RPi4-4GB',spec:'Python 3.11 — 10 Hz control loop\nState machine, PID, GUI, ThingSpeak cloud upload',price:'~$55',label:'Raspberry Pi 4\n4 GB RAM\n10 Hz PID'} },
+    { x:EX+295,info:{name:'ADS1115 16-bit ADC',part:'ADS1115',spec:'I2C, 16-bit resolution\nA0: pressure transducer (250Ω shunt → 1–5V)\nA1: temperature sensor',price:'~$10',label:'ADS1115\n16-bit ADC\nI2C Bus'} },
+    { x:EX+448,info:{name:'A4988 Stepper Driver',part:'Pololu A4988',spec:'1/16 microstepping\nGPIO 17 STEP | 27 DIR | 22 ENABLE\nDrives NEMA17 on needle valve',price:'~$8',label:'A4988\nStepper Driver\n1/16 Microstep'} },
+    { x:EX+600,info:{name:'24VDC Relay Module',part:'Relay-24VDC',spec:'GPIO 18 PWM → relay coil → solenoid valve\nControls vent solenoid duty cycle',price:'~$20',label:'24VDC Relay\nModule\nGPIO 18 PWM'} },
+    { x:EX+755,info:{name:'32 GB microSD Card',part:'SanDisk 32GB Class 10',spec:'Boot media for Raspberry Pi 4\nStores Python control app + CSV logs',price:'~$10',label:'32GB microSD\nSanDisk\nOS + Data'} },
+  ];
+  elBoxes.forEach(b=>S.appendChild(elecBox(b.x,EP+8,EW,EH,EL,{...b.info,st:EL})));
+
+  // ── CONTROL SIGNAL LINES ─────────────────────────────────────────────────────
+  const RPiCX = EX+140+EW/2;  // ~265
+  const ADSCX = EX+295+EW/2;  // ~407
+  const A49CX = EX+448+EW/2;  // ~565
+  const RLYCX = EX+600+EW/2;  // ~715
+
+  // ADS → PT (pressure transducer at x=490, y=137)
+  S.appendChild(mk('polyline',{points:`${ADSCX},${EP+8} ${ADSCX},540 490,540 490,173`,
+    fill:'none',stroke:CT,'stroke-width':1.5,'stroke-dasharray':'6,4','stroke-linejoin':'round'}));
+  S.appendChild(arrowHead(490,178,'u',CT));
+
+  // ADS → Temp (INKBIRD at right of vessel, ~y=270)
+  S.appendChild(mk('polyline',{points:`${ADSCX+20},${EP+8} ${ADSCX+20},530 970,530 970,275`,
+    fill:'none',stroke:CT,'stroke-width':1.5,'stroke-dasharray':'6,4','stroke-linejoin':'round'}));
+  S.appendChild(arrowHead(970,280,'d',CT));
+  S.appendChild(tx(975,490,'TEMP\nSIGNAL',7,CT,'start'));
+
+  // RPi → A4988
+  S.appendChild(ln(RPiCX+EW/2,EP+68,EX+448,EP+68,CT,1.5,'5,4'));
+  S.appendChild(arrowHead(EX+450,EP+68,'r',CT));
+
+  // A4988 → Needle valve motor (NV at x=620, motor at y=261)
+  S.appendChild(mk('polyline',{points:`${A49CX},${EP+8} ${A49CX},552 620,552 620,279`,
+    fill:'none',stroke:CT,'stroke-width':1.5,'stroke-dasharray':'6,4','stroke-linejoin':'round'}));
+  S.appendChild(arrowHead(620,283,'u',CT));
+  S.appendChild(tx(628,540,'STEP\nCTRL',7,CT,'start'));
+
+  // RPi → Relay
+  S.appendChild(ln(RPiCX+EW/2,EP+88,EX+600,EP+88,CT,1.5,'5,4'));
+  S.appendChild(arrowHead(EX+602,EP+88,'r',CT));
+
+  // Relay → Solenoid valve (SOL at x=710, y=470)
+  S.appendChild(mk('polyline',{points:`${RLYCX},${EP+8} ${RLYCX},520 710,520 710,482`,
+    fill:'none',stroke:CT,'stroke-width':1.5,'stroke-dasharray':'6,4','stroke-linejoin':'round'}));
+  S.appendChild(arrowHead(710,486,'d',CT));
+  S.appendChild(tx(718,510,'VENT\nCTRL',7,CT,'start'));
+
+  // ── SECTION SEPARATOR ─────────────────────────────────────────────────────────
+  S.appendChild(ln(140,555,1120,555,GR,1,'10,5'));
+
+  // ── FLOW ANNOTATIONS ─────────────────────────────────────────────────────────
+  S.appendChild(tx(67,62,'↑ AIR\n   OUT',7.5,cv('--owned-s'),'start'));
+  S.appendChild(tx(835,464,'VESSEL\nOUTLET',7,DM));
+}
+
+draw();
+const mo=new MutationObserver(draw);
+mo.observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',draw);
+</script>
