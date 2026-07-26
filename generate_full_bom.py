@@ -59,11 +59,12 @@ ROWS = [
          item="SS tubing, 1/4\" OD × 0.065\" wall", part="SS-T4-S-065-20",
          desc="Seamless 316SS tubing, 20 ft coil — ASTM A269\n"
               "⚠ Must be 0.065\" wall (rated ~7,400 PSI)\n"
-              "⚠ Amazon B0BB1122VJ (FITOK) is only 0.035\" wall (~3,200 PSI) — NOT safe for this system",
+              "⚠ Amazon B0BB1122VJ (FITOK) is only 0.035\" wall (~3,200 PSI) — NOT safe for this system\n"
+              "✓ Amazon B0B9ZV93WP (FITOK Group A) is 0.065\" wall — verify spec on product page before ordering",
          spec="316SS seamless, 1/4\" OD × 0.065\" wall, 20 ft",
-         vendor="McMaster-Carr",
+         vendor="Amazon — FITOK",
          qty=1, unit_price=120.00,
-         link="https://www.mcmaster.com/products/?Ntt=316SS+tubing+1%2F4+OD+0.065+wall"),
+         link="https://www.amazon.com/dp/B0B9ZV93WP"),
 
     # ── 5. Compression Fittings ───────────────────────────────────────────────
     dict(section="5. Compression Fittings",
