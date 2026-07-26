@@ -120,12 +120,16 @@ ROWS = [
 
     # ── 6. Relief / Safety ────────────────────────────────────────────────────
     dict(section="6. Relief Valve",
-         item="Relief valve", part="442F42",
-         desc="Parker relief valve, spring-loaded, 1/4\" MNPT",
-         spec="SS316, set pressure adjustable, protects vessel from overpressure",
-         vendor="Grainger",
-         qty=1, unit_price=165.00,
-         search_vendor="grainger", search_query="Parker 442F42 relief valve"),
+         item="Relief valve", part="SS-RL3S4",
+         desc="Swagelok high-pressure relief valve, 1/4\" tube compression fitting\n"
+              "⚠ MUST specify set pressure ~4,350 PSI (30 MPa) when ordering\n"
+              "⚠ Previous BOM listed Parker 442F42 — WRONG (only rated 114 PSI max)",
+         spec="316SS, 1/4\" tube, rated to 6,000 PSI — matches existing Swagelok fittings\n"
+              "Set between operating pressure (4,061 PSI) and vessel MAWP (4,999 PSI)\n"
+              "Recommend set pressure: 4,350 PSI (30 MPa)",
+         vendor="Swagelok authorized distributor",
+         qty=1, unit_price=250.00,
+         search_vendor="swagelok", search_query="SS-RL3S4 high pressure relief valve"),
     dict(section="6. Relief Valve",
          item="PTFE thread tape", part="34P209",
          desc="PTFE sealing tape for NPT thread connections",
