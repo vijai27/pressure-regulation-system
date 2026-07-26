@@ -138,14 +138,31 @@ ROWS = [
          qty=1, unit_price=5.00,
          search_vendor="grainger", search_query="Grainger 34P209 PTFE tape"),
 
+    # ── 6b. Vent Solenoid Valve ───────────────────────────────────────────────
+    dict(section="6. Relief Valve",
+         item="Vent solenoid valve (automated depressurization)",
+         part="Parker 4-Way or Asco 8290 HP",
+         desc="Normally-closed 24VDC solenoid valve, 1/4\" tube or NPT, high-pressure rated\n"
+              "Driven by RPi GPIO 18 (PWM) via relay — opens automatically during DEPRESSURIZE state\n"
+              "⚠ MUST be rated ≥ 6,000 PSI — standard solenoids (150-300 PSI) will fail catastrophically",
+         spec="316SS body, NC (fail-safe closed), 24VDC coil, 1/4\" process connection\n"
+              "Candidates: Parker Series 34 HP, Asco 8290 HP series, or HiP solenoid valve\n"
+              "⚠ THIS PART IS MISSING FROM ORIGINAL BOM — confirm spec with distributor before ordering",
+         vendor="Parker / Asco / High Pressure Equipment (HiP)",
+         qty=1, unit_price=500.00,
+         search_vendor="parker", search_query="high pressure solenoid valve 24VDC normally closed 6000 PSI 316SS"),
+
     # ── 7. Sensors ────────────────────────────────────────────────────────────
     dict(section="7. Sensors",
-         item="Pressure transducer", part="K4708",
-         desc="Ashcroft 0-5000 PSI pressure transducer, 4-20 mA output, SS, IP67",
-         spec="4-20 mA → 1-5 V via 250 ohm shunt resistor into ADS1115 A0",
+         item="Pressure transducer", part="5DEK9",
+         desc="Ashcroft G2, 0-5000 PSI, 4-20 mA output, nylon housing, 316SS wetted parts, IP67\n"
+              "Grainger item 5DEK9 — Mfr model G17M0242F25000#\n"
+              "⚠ Do NOT order K4708 — that is the 1-5V DC output version, incompatible with 4-20mA wiring",
+         spec="4-20 mA → 1-5 V via 250 ohm shunt resistor into ADS1115 A0\n"
+              "Nylon housing is fine for lab use; 316SS diaphragm is the CO2-wetted part",
          vendor="Grainger",
-         qty=1, unit_price=400.00,
-         search_vendor="grainger", search_query="Ashcroft K4708 pressure transducer 0-5000 PSI"),
+         qty=1, unit_price=200.00,
+         search_vendor="grainger", search_query="Ashcroft G17M0242F25000 pressure transmitter 4-20mA 5000 PSI"),
     dict(section="7. Sensors",
          item="Pressure gauge (mechanical, visual backup)", part="K4201",
          desc="Ashcroft 0-5000 PSI analog pressure gauge",
@@ -404,6 +421,13 @@ def build_bom(output_path):
         ["- SS-83KS4 (ball valve) is rated 6,000 PSI. SS-43GS4 looks similar but is only 3,000 PSI."],
         ["- All fittings are Swagelok SS-400 series, rated 5,100 PSI, matched to 1/4\" tube OD."],
         ["- SS-1RS4 needle valve (5,000 PSI) gives ~23% margin above 4,061 PSI (28 MPa) operating pressure."],
+        [""],
+        ["CORRECTIONS vs ORIGINAL BOM:"],
+        ["- Pressure transducer changed from K4708 to 5DEK9 (G17M0242F25000#). K4708 is the 1-5V DC"],
+        ["  output variant — incompatible with the 4-20mA → 250Ω shunt wiring already designed."],
+        ["  5DEK9 is the correct 4-20mA version at roughly half the price (~$200 vs ~$400)."],
+        ["- Vent solenoid valve added (was missing from original BOM). Must be rated ≥6,000 PSI."],
+        ["  Standard 150-300 PSI solenoids WILL FAIL at 28 MPa. See Section 6 entry."],
         [""],
         ["Section 9 (Already Owned) lists existing lab equipment for completeness — no purchase needed."],
         ["Section 10 (Optional) is a windowed vessel upgrade for visualizing scCO2 flow — not required"],

@@ -1,0 +1,1051 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>scCO₂ System — Installation Guide</title>
+<style>
+/* ── Tokens ──────────────────────────────────────────────────── */
+:root {
+  --bg:           #ECF0F5;
+  --surface:      #FFFFFF;
+  --surface-2:    #E0E8F2;
+  --border:       #C4D0E0;
+  --text:         #18273A;
+  --text-muted:   #52698A;
+  --accent:       #0A6EA6;
+  --accent-dim:   #D8EBF7;
+
+  --owned:        #1A7A46;
+  --owned-bg:     #D0EBD9;
+  --owned-pipe:   #27AE60;
+
+  --fluid:        #A05C00;
+  --fluid-bg:     #FDE9C8;
+  --fluid-pipe:   #E67E22;
+
+  --elec:         #1558A0;
+  --elec-bg:      #D0DEF5;
+
+  --danger:       #B01818;
+  --danger-bg:    #FBE0E0;
+
+  --mono: 'Courier New', Courier, monospace;
+  --sans: system-ui, -apple-system, 'Segoe UI', Arial, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:           #0B1220;
+    --surface:      #132035;
+    --surface-2:    #1C2E48;
+    --border:       #283D58;
+    --text:         #C8DCF2;
+    --text-muted:   #6A8EAE;
+    --accent:       #3BA8E0;
+    --accent-dim:   #0D2A40;
+    --owned:        #33C774;
+    --owned-bg:     #0A2A1A;
+    --owned-pipe:   #2ECC71;
+    --fluid:        #F0A835;
+    --fluid-bg:     #2E1C00;
+    --fluid-pipe:   #F39C12;
+    --elec:         #5CA0E8;
+    --elec-bg:      #0D2040;
+    --danger:       #F05050;
+    --danger-bg:    #2E0A0A;
+  }
+}
+:root[data-theme="dark"] {
+  --bg:           #0B1220;
+  --surface:      #132035;
+  --surface-2:    #1C2E48;
+  --border:       #283D58;
+  --text:         #C8DCF2;
+  --text-muted:   #6A8EAE;
+  --accent:       #3BA8E0;
+  --accent-dim:   #0D2A40;
+  --owned:        #33C774;
+  --owned-bg:     #0A2A1A;
+  --owned-pipe:   #2ECC71;
+  --fluid:        #F0A835;
+  --fluid-bg:     #2E1C00;
+  --fluid-pipe:   #F39C12;
+  --elec:         #5CA0E8;
+  --elec-bg:      #0D2040;
+  --danger:       #F05050;
+  --danger-bg:    #2E0A0A;
+}
+:root[data-theme="light"] {
+  --bg:           #ECF0F5;
+  --surface:      #FFFFFF;
+  --surface-2:    #E0E8F2;
+  --border:       #C4D0E0;
+  --text:         #18273A;
+  --text-muted:   #52698A;
+  --accent:       #0A6EA6;
+  --accent-dim:   #D8EBF7;
+  --owned:        #1A7A46;
+  --owned-bg:     #D0EBD9;
+  --owned-pipe:   #27AE60;
+  --fluid:        #A05C00;
+  --fluid-bg:     #FDE9C8;
+  --fluid-pipe:   #E67E22;
+  --elec:         #1558A0;
+  --elec-bg:      #D0DEF5;
+  --danger:       #B01818;
+  --danger-bg:    #FBE0E0;
+}
+
+/* ── Reset & Base ────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--sans);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.55;
+  font-size: 15px;
+}
+a { color: var(--accent); }
+
+/* ── Layout ──────────────────────────────────────────────────── */
+.page { max-width: 1180px; margin: 0 auto; padding: 28px 20px 60px; }
+
+/* ── Header ──────────────────────────────────────────────────── */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 20px;
+  border-bottom: 2px solid var(--border);
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.header-left h1 {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--text);
+}
+.header-left p {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+
+/* ── Legend ──────────────────────────────────────────────────── */
+.legend {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.leg {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.leg-dot {
+  width: 11px; height: 11px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.leg-dot.owned   { background: var(--owned); }
+.leg-dot.fluid   { background: var(--fluid-pipe); }
+.leg-dot.elec    { background: var(--elec); }
+.leg-dot.missing { background: var(--danger); }
+
+/* ── Diagram container ───────────────────────────────────────── */
+.diagram-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 32px;
+  overflow-x: auto;
+}
+.diagram-wrap svg { display: block; min-width: 900px; }
+
+/* ── Section headings ────────────────────────────────────────── */
+.section-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 32px 0 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── Cards grid ──────────────────────────────────────────────── */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 14px;
+}
+
+/* ── Card ────────────────────────────────────────────────────── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.card.is-danger { border-color: var(--danger); }
+
+.card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+.callout {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+  font-family: var(--mono);
+  letter-spacing: 0;
+}
+.callout.owned { background: var(--owned-bg); color: var(--owned); }
+.callout.fluid { background: var(--fluid-bg); color: var(--fluid); }
+.callout.elec  { background: var(--elec-bg);  color: var(--elec); }
+.callout.missing { background: var(--danger-bg); color: var(--danger); }
+
+.card-title { flex: 1; }
+.card-name {
+  font-weight: 600;
+  font-size: 13.5px;
+  line-height: 1.3;
+}
+.card-part {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.status-chip {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 2px 7px;
+  border-radius: 10px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  align-self: flex-start;
+  margin-top: 2px;
+}
+.status-chip.owned   { background: var(--owned-bg);  color: var(--owned); }
+.status-chip.fluid   { background: var(--fluid-bg);  color: var(--fluid); }
+.status-chip.elec    { background: var(--elec-bg);   color: var(--elec); }
+.status-chip.missing { background: var(--danger-bg); color: var(--danger); }
+
+/* ── Card rows ───────────────────────────────────────────────── */
+.card-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 12.5px;
+}
+.card-row {
+  display: grid;
+  grid-template-columns: 78px 1fr;
+  gap: 6px;
+  align-items: baseline;
+}
+.row-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding-top: 1px;
+}
+.row-val { color: var(--text); }
+.row-val ul { padding-left: 14px; }
+.row-val ul li { margin-top: 2px; }
+
+/* ── Warning banner inside card ──────────────────────────────── */
+.card-warn {
+  background: var(--danger-bg);
+  border-left: 3px solid var(--danger);
+  border-radius: 0 4px 4px 0;
+  padding: 7px 10px;
+  font-size: 11.5px;
+  color: var(--danger);
+  line-height: 1.45;
+}
+.card-note {
+  background: var(--accent-dim);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 4px 4px 0;
+  padding: 7px 10px;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  line-height: 1.45;
+}
+
+/* ── Wide card ───────────────────────────────────────────────── */
+.card.wide { grid-column: 1 / -1; }
+
+/* ── Wiring table ────────────────────────────────────────────── */
+.wiring-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.wiring-table th, .wiring-table td {
+  padding: 5px 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.wiring-table th {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  background: var(--surface-2);
+}
+.wiring-table td:first-child { font-family: var(--mono); color: var(--accent); }
+.wiring-table tr:last-child td { border-bottom: none; }
+.wiring-wrap { overflow-x: auto; }
+</style>
+</head>
+<body>
+<div class="page">
+
+<!-- ── Header ──────────────────────────────────────────────── -->
+<header class="header">
+  <div class="header-left">
+    <p class="eyebrow">University of Michigan · scCO₂ Research System</p>
+    <h1>Installation Guide — Where Every Part Goes</h1>
+    <p>PARR 2302HC vessel · 28 MPa max · 60 °C · HII 5G-TD booster · Raspberry Pi 4 control</p>
+  </div>
+  <div class="legend">
+    <span class="leg"><span class="leg-dot owned"></span> Already owned</span>
+    <span class="leg"><span class="leg-dot fluid"></span> Must buy — fluid system</span>
+    <span class="leg"><span class="leg-dot elec"></span> Must buy — electronics</span>
+    <span class="leg"><span class="leg-dot missing"></span> Missing from original BOM</span>
+  </div>
+</header>
+
+<!-- ── P&ID Diagram ─────────────────────────────────────────── -->
+<div class="diagram-wrap">
+<svg viewBox="0 0 1080 310" fill="none" xmlns="http://www.w3.org/2000/svg"
+     style="font-family: system-ui, sans-serif; width:100%; height:auto;">
+
+  <!-- ── CSS vars injected for SVG (SVG doesn't inherit CSS vars automatically in all browsers) ── -->
+  <defs>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#3498DB"/>
+    </marker>
+    <marker id="arrow-vent" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#7F8C8D"/>
+    </marker>
+    <marker id="arrow-ctrl" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#8E44AD"/>
+    </marker>
+    <marker id="arrow-meas" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L8,3 z" fill="#16A085"/>
+    </marker>
+  </defs>
+
+  <!-- ── Background zones ──────────────────────────────────── -->
+  <!-- Gas supply zone -->
+  <rect x="8" y="80" width="150" height="140" rx="5"
+        fill="currentColor" opacity="0.04" stroke="#27AE60" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="16" y="97" font-size="8" letter-spacing="1.2" fill="#27AE60" font-weight="600">GAS SUPPLY</text>
+
+  <!-- High pressure line zone -->
+  <rect x="165" y="48" width="760" height="155" rx="5"
+        fill="currentColor" opacity="0.03" stroke="#E67E22" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="174" y="63" font-size="8" letter-spacing="1.2" fill="#E67E22" font-weight="600">HIGH PRESSURE FLUID SYSTEM — 28 MPa MAX</text>
+
+  <!-- Vessel zone -->
+  <rect x="730" y="80" width="105" height="110" rx="6"
+        fill="currentColor" opacity="0.06" stroke="#27AE60" stroke-width="1.5"/>
+  <text x="756" y="96" font-size="8" letter-spacing="1" fill="#27AE60" font-weight="600">VESSEL</text>
+
+  <!-- Electronics zone -->
+  <rect x="8" y="238" width="1064" height="66" rx="5"
+        fill="currentColor" opacity="0.04" stroke="#3498DB" stroke-width="1" stroke-dasharray="4,3"/>
+  <text x="16" y="253" font-size="8" letter-spacing="1.2" fill="#3498DB" font-weight="600">ELECTRONICS &amp; CONTROL</text>
+
+  <!-- ── Main high-pressure pipeline (y=145) ─────────────────── -->
+  <!-- CV-1 to BV-1 -->
+  <line x1="172" y1="145" x2="290" y2="145" stroke="#3498DB" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <!-- BV-1 to instrument tee -->
+  <line x1="316" y1="145" x2="378" y2="145" stroke="#3498DB" stroke-width="2.5"/>
+  <!-- instrument tee to MNV-1 -->
+  <line x1="378" y1="145" x2="455" y2="145" stroke="#3498DB" stroke-width="2.5"/>
+  <!-- MNV-1 outlet to BV-2 -->
+  <line x1="488" y1="145" x2="570" y2="145" stroke="#3498DB" stroke-width="2.5"/>
+  <!-- BV-2 to vessel inlet -->
+  <line x1="596" y1="145" x2="730" y2="145" stroke="#3498DB" stroke-width="2.5"/>
+  <!-- vessel outlet to BV-3 -->
+  <line x1="835" y1="145" x2="870" y2="145" stroke="#3498DB" stroke-width="2.5"/>
+  <!-- BV-3 to SV-1 -->
+  <line x1="896" y1="145" x2="960" y2="145" stroke="#3498DB" stroke-width="2.5"/>
+  <!-- SV-1 to vent arrow -->
+  <line x1="986" y1="145" x2="1055" y2="145" stroke="#7F8C8D" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrow-vent)"/>
+
+  <!-- Instrument tee branch (up) -->
+  <line x1="378" y1="145" x2="378" y2="88" stroke="#3498DB" stroke-width="2.5"/>
+  <!-- PT-1 to PG-1 branch -->
+  <line x1="378" y1="88" x2="430" y2="88" stroke="#3498DB" stroke-width="2.5"/>
+
+  <!-- Relief valve tee (at x=530) -->
+  <line x1="530" y1="145" x2="530" y2="88" stroke="#3498DB" stroke-width="2.5"/>
+  <line x1="530" y1="88" x2="590" y2="88" stroke="#7F8C8D" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrow-vent)"/>
+
+  <!-- Vent label -->
+  <text x="1058" y="149" font-size="9" fill="#7F8C8D" font-weight="600">VENT / HOOD</text>
+  <text x="593" y="84" font-size="9" fill="#7F8C8D" font-weight="600">VENT</text>
+
+  <!-- ── Booster to CV-1 ──────────────────────────────────── -->
+  <line x1="152" y1="145" x2="172" y2="145" stroke="#3498DB" stroke-width="2.5"/>
+
+  <!-- ── Air inlet to booster (from below) ─────────────────── -->
+  <line x1="105" y1="220" x2="105" y2="185" stroke="#95A5A6" stroke-width="2" stroke-dasharray="4,3" marker-end="url(#arrow)"/>
+  <text x="60" y="232" font-size="9" fill="#7F8C8D">DRIVE AIR (100 PSI)</text>
+
+  <!-- ── CO2 cylinder to booster (from left) ───────────────── -->
+  <line x1="68" y1="145" x2="80" y2="145" stroke="#3498DB" stroke-width="2"/>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- COMPONENTS                                                 -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+
+  <!-- ① Gas Cylinders (owned) -->
+  <rect x="10" y="107" width="32" height="56" rx="4" fill="#27AE60" opacity="0.85"/>
+  <rect x="10" y="104" width="32" height="8" rx="2" fill="#1E8449"/>
+  <text x="26" y="130" text-anchor="middle" font-size="8" fill="white" font-weight="600">CO₂</text>
+  <text x="26" y="142" text-anchor="middle" font-size="7" fill="white">N₂ Ar</text>
+  <rect x="48" y="117" width="22" height="40" rx="3" fill="#95A5A6" opacity="0.85"/>
+  <rect x="48" y="114" width="22" height="7" rx="2" fill="#7F8C8D"/>
+  <text x="59" y="135" text-anchor="middle" font-size="7" fill="white" font-weight="600">AIR</text>
+  <!-- callout ① -->
+  <circle cx="14" cy="108" r="8" fill="#27AE60"/>
+  <text x="14" y="112" text-anchor="middle" font-size="8" fill="white" font-weight="700">①</text>
+
+  <!-- ② HII Booster (owned) -->
+  <rect x="80" y="113" width="72" height="64" rx="5" fill="#27AE60" opacity="0.85"/>
+  <text x="116" y="138" text-anchor="middle" font-size="9" fill="white" font-weight="700">HII</text>
+  <text x="116" y="150" text-anchor="middle" font-size="8" fill="white">BOOSTER</text>
+  <text x="116" y="163" text-anchor="middle" font-size="7" fill="white">5G-TD</text>
+  <!-- callout ② -->
+  <circle cx="84" cy="114" r="8" fill="#27AE60"/>
+  <text x="84" y="118" text-anchor="middle" font-size="8" fill="white" font-weight="700">②</text>
+
+  <!-- ③ Check Valve CV-1 (fluid to buy) -->
+  <!-- Triangle pointing right = check valve -->
+  <polygon points="172,135 172,155 191,145" fill="#E67E22" opacity="0.9"/>
+  <line x1="191" y1="135" x2="191" y2="155" stroke="#E67E22" stroke-width="2"/>
+  <!-- callout ③ -->
+  <circle cx="178" cy="128" r="8" fill="#E67E22"/>
+  <text x="178" y="132" text-anchor="middle" font-size="8" fill="white" font-weight="700">③</text>
+  <text x="181" y="166" text-anchor="middle" font-size="8" fill="#E67E22" font-weight="600">CV-1</text>
+
+  <!-- ④ Ball Valve BV-1 (fluid to buy) -->
+  <!-- Diamond bowtie symbol -->
+  <polygon points="290,145 303,135 316,145 303,155" fill="#E67E22" opacity="0.9"/>
+  <line x1="297" y1="145" x2="309" y2="145" stroke="white" stroke-width="1.5"/>
+  <!-- callout ④ -->
+  <circle cx="294" cy="128" r="8" fill="#E67E22"/>
+  <text x="294" y="132" text-anchor="middle" font-size="8" fill="white" font-weight="700">④</text>
+  <text x="303" y="166" text-anchor="middle" font-size="8" fill="#E67E22" font-weight="600">BV-1</text>
+
+  <!-- ⑤ Pressure Transducer PT-1 (fluid/sensor to buy) -->
+  <circle cx="378" cy="88" r="18" fill="#E67E22" opacity="0.85"/>
+  <text x="378" y="84" text-anchor="middle" font-size="8" fill="white" font-weight="700">PT</text>
+  <text x="378" y="95" text-anchor="middle" font-size="7.5" fill="white">5DEK9</text>
+  <!-- callout ⑤ -->
+  <circle cx="359" cy="73" r="8" fill="#E67E22"/>
+  <text x="359" y="77" text-anchor="middle" font-size="8" fill="white" font-weight="700">⑤</text>
+
+  <!-- ⑥ Pressure Gauge PG-1 (fluid to buy) -->
+  <circle cx="430" cy="88" r="18" fill="#E67E22" opacity="0.85"/>
+  <text x="430" y="84" text-anchor="middle" font-size="8" fill="white" font-weight="700">PG</text>
+  <text x="430" y="95" text-anchor="middle" font-size="7.5" fill="white">K4201</text>
+  <!-- callout ⑥ -->
+  <circle cx="449" cy="73" r="8" fill="#E67E22"/>
+  <text x="449" y="77" text-anchor="middle" font-size="8" fill="white" font-weight="700">⑥</text>
+
+  <!-- ⑦ Motorized Needle Valve MNV-1 (fluid to buy) -->
+  <!-- Needle valve: hourglass + actuator block on top -->
+  <polygon points="455,135 488,145 455,155" fill="#E67E22" opacity="0.85"/>
+  <polygon points="488,135 455,145 488,155" fill="#E67E22" opacity="0.85"/>
+  <rect x="463" y="115" width="14" height="18" rx="2" fill="#C0392B"/>
+  <line x1="470" y1="115" x2="470" y2="135" stroke="#C0392B" stroke-width="2"/>
+  <!-- callout ⑦ -->
+  <circle cx="455" cy="108" r="8" fill="#E67E22"/>
+  <text x="455" y="112" text-anchor="middle" font-size="8" fill="white" font-weight="700">⑦</text>
+  <text x="471" y="170" text-anchor="middle" font-size="8" fill="#E67E22" font-weight="600">MNV-1</text>
+
+  <!-- ⑧ Relief Valve RV-1 (fluid to buy) -->
+  <polygon points="519,88 530,70 541,88" fill="#E67E22" opacity="0.85"/>
+  <line x1="525" y1="88" x2="535" y2="88" stroke="#E67E22" stroke-width="2"/>
+  <line x1="530" y1="95" x2="530" y2="108" stroke="#E67E22" stroke-width="2"/>
+  <!-- spring symbol -->
+  <path d="M525,97 Q527,93 530,93 Q533,93 535,97 Q537,101 530,101" stroke="#E67E22" stroke-width="1.5" fill="none"/>
+  <!-- callout ⑧ -->
+  <circle cx="519" cy="63" r="8" fill="#E67E22"/>
+  <text x="519" y="67" text-anchor="middle" font-size="8" fill="white" font-weight="700">⑧</text>
+  <text x="530" y="120" text-anchor="middle" font-size="8" fill="#E67E22" font-weight="600">RV-1</text>
+
+  <!-- ⑨ Ball Valve BV-2 (fluid to buy) -->
+  <polygon points="570,145 583,135 596,145 583,155" fill="#E67E22" opacity="0.9"/>
+  <line x1="577" y1="145" x2="589" y2="145" stroke="white" stroke-width="1.5"/>
+  <!-- callout ⑨ -->
+  <circle cx="574" cy="128" r="8" fill="#E67E22"/>
+  <text x="574" y="132" text-anchor="middle" font-size="8" fill="white" font-weight="700">⑨</text>
+  <text x="583" y="166" text-anchor="middle" font-size="8" fill="#E67E22" font-weight="600">BV-2</text>
+
+  <!-- ⑩ PARR Vessel (owned) -->
+  <rect x="730" y="100" width="105" height="90" rx="8" fill="#27AE60" opacity="0.85"/>
+  <text x="782" y="130" text-anchor="middle" font-size="10" fill="white" font-weight="700">PARR</text>
+  <text x="782" y="144" text-anchor="middle" font-size="9" fill="white">VESSEL</text>
+  <text x="782" y="157" text-anchor="middle" font-size="8" fill="white">1 L · 60°C</text>
+  <text x="782" y="168" text-anchor="middle" font-size="7.5" fill="#90EE90">5000 PSI MAWP</text>
+  <!-- callout ⑩ -->
+  <circle cx="734" cy="101" r="8" fill="#27AE60"/>
+  <text x="734" y="105" text-anchor="middle" font-size="8" fill="white" font-weight="700">⑩</text>
+
+  <!-- ⑪ Ball Valve BV-3 (fluid to buy) -->
+  <polygon points="870,145 883,135 896,145 883,155" fill="#E67E22" opacity="0.9"/>
+  <line x1="877" y1="145" x2="889" y2="145" stroke="white" stroke-width="1.5"/>
+  <!-- callout ⑪ -->
+  <circle cx="874" cy="128" r="8" fill="#E67E22"/>
+  <text x="874" y="132" text-anchor="middle" font-size="8" fill="white" font-weight="700">⑪</text>
+  <text x="883" y="166" text-anchor="middle" font-size="8" fill="#E67E22" font-weight="600">BV-3</text>
+
+  <!-- ⑫ Solenoid Valve SV-1 (MISSING from BOM — danger) -->
+  <rect x="960" y="133" width="26" height="24" rx="3" fill="#E74C3C" opacity="0.9"/>
+  <line x1="973" y1="124" x2="973" y2="133" stroke="#E74C3C" stroke-width="2"/>
+  <text x="973" y="121" text-anchor="middle" font-size="7" fill="#E74C3C" font-weight="700">⚡</text>
+  <!-- callout ⑫ -->
+  <circle cx="964" cy="128" r="8" fill="#E74C3C"/>
+  <text x="964" y="132" text-anchor="middle" font-size="8" fill="white" font-weight="700">⑫</text>
+  <text x="973" y="170" text-anchor="middle" font-size="8" fill="#E74C3C" font-weight="600">SV-1</text>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- ELECTRONICS PANEL                                          -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+
+  <!-- ⑬ PSU 24VDC -->
+  <rect x="16" y="258" width="68" height="36" rx="4" fill="#2980B9" opacity="0.85"/>
+  <text x="50" y="274" text-anchor="middle" font-size="8" fill="white" font-weight="700">PSU 24VDC</text>
+  <text x="50" y="285" text-anchor="middle" font-size="7.5" fill="white">33NT20</text>
+  <circle cx="20" cy="259" r="7" fill="#2980B9"/>
+  <text x="20" y="263" text-anchor="middle" font-size="7" fill="white" font-weight="700">⑬</text>
+
+  <!-- ⑭ A4988 Stepper Driver -->
+  <rect x="180" y="258" width="65" height="36" rx="4" fill="#2980B9" opacity="0.85"/>
+  <text x="212" y="274" text-anchor="middle" font-size="8" fill="white" font-weight="700">A4988</text>
+  <text x="212" y="285" text-anchor="middle" font-size="7.5" fill="white">STEPPER DRV</text>
+  <circle cx="184" cy="259" r="7" fill="#2980B9"/>
+  <text x="184" y="263" text-anchor="middle" font-size="7" fill="white" font-weight="700">⑭</text>
+
+  <!-- ⑮ Raspberry Pi 4 (center of electronics) -->
+  <rect x="360" y="252" width="88" height="46" rx="4" fill="#2980B9" opacity="0.85"/>
+  <text x="404" y="272" text-anchor="middle" font-size="9" fill="white" font-weight="700">Raspberry Pi 4</text>
+  <text x="404" y="284" text-anchor="middle" font-size="7.5" fill="white">Python 3.11 · 10 Hz PID</text>
+  <text x="404" y="293" text-anchor="middle" font-size="7.5" fill="white">SIMULATION=False</text>
+  <circle cx="364" cy="253" r="7" fill="#2980B9"/>
+  <text x="364" y="257" text-anchor="middle" font-size="7" fill="white" font-weight="700">⑮</text>
+
+  <!-- ⑯ ADS1115 ADC -->
+  <rect x="560" y="258" width="68" height="36" rx="4" fill="#2980B9" opacity="0.85"/>
+  <text x="594" y="274" text-anchor="middle" font-size="8" fill="white" font-weight="700">ADS1115</text>
+  <text x="594" y="285" text-anchor="middle" font-size="7.5" fill="white">16-BIT ADC</text>
+  <circle cx="564" cy="259" r="7" fill="#2980B9"/>
+  <text x="564" y="263" text-anchor="middle" font-size="7" fill="white" font-weight="700">⑯</text>
+
+  <!-- ⑰ NEMA 17 + Coupler (at MNV-1 location) -->
+  <!-- shown near valve in diagram -->
+  <rect x="456" y="107" width="28" height="18" rx="2" fill="#C0392B" opacity="0.9"/>
+  <text x="470" y="119" text-anchor="middle" font-size="7" fill="white" font-weight="600">NEMA17</text>
+  <!-- NEMA 17 callout -->
+  <circle cx="478" cy="108" r="7" fill="#2980B9"/>
+  <text x="478" y="112" text-anchor="middle" font-size="7" fill="white" font-weight="700">⑰</text>
+
+  <!-- ⑱ Relay Module -->
+  <rect x="840" y="258" width="65" height="36" rx="4" fill="#2980B9" opacity="0.85"/>
+  <text x="872" y="274" text-anchor="middle" font-size="8" fill="white" font-weight="700">RELAY</text>
+  <text x="872" y="285" text-anchor="middle" font-size="7.5" fill="white">24VDC COIL</text>
+  <circle cx="844" cy="259" r="7" fill="#2980B9"/>
+  <text x="844" y="263" text-anchor="middle" font-size="7" fill="white" font-weight="700">⑱</text>
+
+  <!-- ⑲ INKBIRD temperature controller (owned) -->
+  <rect x="680" y="258" width="68" height="36" rx="4" fill="#27AE60" opacity="0.85"/>
+  <text x="714" y="274" text-anchor="middle" font-size="8" fill="white" font-weight="700">INKBIRD</text>
+  <text x="714" y="285" text-anchor="middle" font-size="7.5" fill="white">60°C SETPOINT</text>
+  <circle cx="684" cy="259" r="7" fill="#27AE60"/>
+  <text x="684" y="263" text-anchor="middle" font-size="7" fill="white" font-weight="700">⑲</text>
+
+  <!-- ══════════════════════════════════════════════════════════ -->
+  <!-- CONTROL SIGNAL LINES (dashed)                              -->
+  <!-- ══════════════════════════════════════════════════════════ -->
+
+  <!-- RPi → A4988 (step/dir/en) -->
+  <line x1="360" y1="275" x2="245" y2="275" stroke="#8E44AD" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-ctrl)"/>
+  <text x="295" y="270" text-anchor="middle" font-size="7.5" fill="#8E44AD">STEP/DIR/EN</text>
+
+  <!-- A4988 → NEMA17 (at valve) -->
+  <line x1="212" y1="258" x2="465" y2="125" stroke="#8E44AD" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-ctrl)"/>
+
+  <!-- PT-1 → ADS1115 (measurement signal) -->
+  <line x1="394" y1="88" x2="560" y2="265" stroke="#16A085" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-meas)"/>
+  <text x="490" y="195" font-size="7.5" fill="#16A085" transform="rotate(-45,490,195)">4-20mA / 250Ω</text>
+
+  <!-- ADS1115 → RPi (I2C) -->
+  <line x1="560" y1="276" x2="448" y2="276" stroke="#16A085" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-meas)"/>
+  <text x="500" y="270" text-anchor="middle" font-size="7.5" fill="#16A085">I²C</text>
+
+  <!-- RPi → Relay (GPIO 18 PWM) -->
+  <line x1="448" y1="275" x2="840" y2="275" stroke="#8E44AD" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-ctrl)"/>
+  <text x="650" y="270" text-anchor="middle" font-size="7.5" fill="#8E44AD">GPIO 18 PWM</text>
+
+  <!-- Relay → SV-1 -->
+  <line x1="872" y1="258" x2="970" y2="157" stroke="#8E44AD" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-ctrl)"/>
+
+  <!-- INKBIRD → Vessel (heater) -->
+  <line x1="714" y1="258" x2="762" y2="190" stroke="#E74C3C" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-ctrl)"/>
+  <text x="720" y="228" font-size="7.5" fill="#E74C3C">HEATER</text>
+
+  <!-- PSU → electronics (power rail) -->
+  <line x1="84" y1="276" x2="180" y2="276" stroke="#F39C12" stroke-width="1.5" stroke-dasharray="3,2"/>
+  <line x1="84" y1="282" x2="360" y2="282" stroke="#F39C12" stroke-width="1.5" stroke-dasharray="3,2"/>
+  <line x1="84" y1="288" x2="840" y2="288" stroke="#F39C12" stroke-width="1.5" stroke-dasharray="3,2"/>
+  <text x="200" y="300" font-size="7.5" fill="#F39C12">24 VDC POWER</text>
+
+</svg>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════ -->
+<!--  INSTALLATION CARDS                                             -->
+<!-- ═══════════════════════════════════════════════════════════════ -->
+
+<!-- ── Fluid System ─────────────────────────────────────────────── -->
+<p class="section-label">Fluid System — Gas Supply &amp; High Pressure Line</p>
+<div class="cards">
+
+  <!-- ① Gas Cylinders -->
+  <div class="card">
+    <div class="card-top">
+      <span class="callout owned">①</span>
+      <div class="card-title">
+        <div class="card-name">Gas Cylinders — CO₂, N₂, Ar, Air</div>
+        <div class="card-part">UN1013 · UN1066 · UN1006 · UN1002 — Metro Welding Supply, Detroit</div>
+      </div>
+      <span class="status-chip owned">OWNED</span>
+    </div>
+    <div class="card-rows">
+      <div class="card-row"><span class="row-label">Location</span><span class="row-val">Gas cabinet or cylinder rack, chained to wall per lab safety policy</span></div>
+      <div class="card-row"><span class="row-label">CO₂/N₂/Ar</span><span class="row-val">Cylinder regulator → 1/4" tube → HII booster gas inlet</span></div>
+      <div class="card-row"><span class="row-label">Air</span><span class="row-val">Shop air regulator set 100 PSI → booster drive air port (never enters vessel)</span></div>
+    </div>
+  </div>
+
+  <!-- ② HII Booster -->
+  <div class="card">
+    <div class="card-top">
+      <span class="callout owned">②</span>
+      <div class="card-title">
+        <div class="card-name">HII Gas Booster</div>
+        <div class="card-part">HII 5G-TD-28/150-CO2 · S/N 1205101</div>
+      </div>
+      <span class="status-chip owned">OWNED</span>
+    </div>
+    <div class="card-rows">
+      <div class="card-row"><span class="row-label">Location</span><span class="row-val">Bench or floor mount, secured with strap or bracket</span></div>
+      <div class="card-row"><span class="row-label">Inlet</span><span class="row-val">CO₂ from cylinder regulator (bottom port)</span></div>
+      <div class="card-row"><span class="row-label">Drive air</span><span class="row-val">100 PSI shop air (max 150 PSI) — clean, dry air only</span></div>
+      <div class="card-row"><span class="row-label">Outlet</span><span class="row-val">High pressure CO₂ → Check Valve CV-1 (③)</span></div>
+    </div>
+    <div class="card-note">At 100 PSI drive air, outlet exceeds 28 MPa — the PID-controlled needle valve limits actual vessel pressure.</div>
+  </div>
+
+  <!-- ③ Check Valve CV-1 -->
+  <div class="card">
+    <div class="card-top">
+      <span class="callout fluid">③</span>
+      <div class="card-title">
+        <div class="card-name">Check Valve CV-1</div>
+        <div class="card-part">Swagelok SS-CHS4-5 · 6,000 PSI · 1/4" tube</div>
+      </div>
+      <span class="status-chip fluid">BUY — FLUID</span>
+    </div>
+    <div class="card-rows">
+      <div class="card-row"><span class="row-label">Location</span><span class="row-val">Immediately at booster outlet, before BV-1</span></div>
+      <div class="card-row"><span class="row-label">Inlet</span><span class="row-val">Booster high-pressure outlet (1/4" tube compression)</span></div>
+      <div class="card-row"><span class="row-label">Outlet</span><span class="row-val">Ball Valve BV-1 inlet (④)</span></div>
+      <div class="card-row"><span class="row-label">Purpose</span><span class="row-val">Prevents vessel pressure from back-driving the booster when it stops</span></div>
+    </div>
+    <div class="card-note">Arrow on valve body must point away from booster (toward BV-1). 5 PSI cracking pressure — opens easily under normal flow.</div>
+  </div>
+
+  <!-- ④ Ball Valve BV-1 -->
+  <div class="card">
+    <div class="card-top">
+      <span class="callout fluid">④</span>
+      <div class="card-title">
+        <div class="card-name">Ball Valve BV-1 — Inlet Isolation</div>
+        <div class="card-part">Swagelok SS-83KS4 · 6,000 PSI · 1/4" tube · PCTFE seats</div>
+      </div>
+      <span class="status-chip fluid">BUY — FLUID</span>
+    </div>
+    <div class="card-rows">
+      <div class="card-row"><span class="row-label">Location</span><span class="row-val">After CV-1, before the instrument tee (PT-1/PG-1)</span></div>
+      <div class="card-row"><span class="row-label">Inlet</span><span class="row-val">CV-1 outlet</span></div>
+      <div class="card-row"><span class="row-label">Outlet</span><span class="row-val">Instrument tee → PT-1 and PG-1</span></div>
+      <div class="card-row"><span class="row-label">Normal state</span><span class="row-val">OPEN during pressurize/hold. Close to isolate high-pressure supply for maintenance.</span></div>
+    </div>
+  </div>
+
+  <!-- ⑤ Pressure Transducer PT-1 -->
+  <div class="card">
+    <div class="card-top">
+      <span class="callout fluid">⑤</span>
+      <div class="card-title">
+        <div class="card-name">Pressure Transducer PT-1</div>
+        <div class="card-part">Ashcroft G2 · 5DEK9 (G17M0242F25000#) · 4-20 mA · 5,000 PSI · Grainger</div>
+      </div>
+      <span class="status-chip fluid">BUY — FLUID</span>
+    </div>
+    <div class="card-rows">
+      <div class="card-row"><span class="row-label">Location</span><span class="row-val">Branch port of tee on high-pressure line (parallel with PG-1)</span></div>
+      <div class="card-row"><span class="row-label">Process</span><span class="row-val">1/4" Male NPT screwed into Swagelok union or tee body</span></div>
+      <div class="card-row"><span class="row-label">Wiring</span><span class="row-val">2-wire: +24VDC and signal. Signal wire through 250 Ω shunt → ADS1115 A0 (1–5V)</span></div>
+      <div class="card-row"><span class="row-label">Power</span><span class="row-val">9–36 VDC (connect to 24VDC PSU)</span></div>
+    </div>
+    <div class="card-warn">Order Grainger item <strong>5DEK9</strong>, not K4708. K4708 outputs 1–5V DC — incompatible with the 4-20 mA wiring. 5DEK9 outputs 4-20 mA as required.</div>
+  </div>
+
+  <!-- ⑥ Pressure Gauge PG-1 -->
+  <div class="card">
+    <div class="card-top">
+      <span class="callout fluid">⑥</span>
+      <div class="card-title">
+        <div class="card-name">Pressure Gauge PG-1 — Visual Backup</div>
+        <div class="card-part">Ashcroft 0–5000 PSI · K4201 · Grainger</div>
+      </div>
+      <span class="status-chip fluid">BUY — FLUID</span>
+    </div>
+    <div class="card-rows">
+      <div class="card-row"><span class="row-label">Location</span><span class="row-val">Second branch of the instrument tee (next to PT-1)</span></div>
+      <div class="card-row"><span class="row-label">Process</span><span class="row-val">1/4" Male NPT — no electrical wiring needed</span></div>
+      <div class="card-row"><span class="row-label">Purpose</span><span class="row-val">Independent analog visual readout; safety check if electronics fail</span></div>
+      <div class="card-row"><span class="row-label">Mount</span><span class="row-val">Face toward operator for easy reading</span></div>
+    </div>
+  </div>
+
+  <!-- ⑦ Motorized Needle Valve MNV-1 -->
+  <div class="card">
+    <div class="card-top">
+      <span class="callout fluid">⑦</span>
+      <div class="card-title">
+        <div class="card-name">Motorized Needle Valve MNV-1</div>
+        <div class="card-part">Swagelok SS-1RS4 · 5,000 PSI · 1/4" tube · Cv = 0.37</div>
+      </div>
+      <span class="status-chip fluid">BUY — FLUID</span>
+    </div>
+    <div class="card-rows">
+      <div class="card-row"><span class="row-label">Location</span><span class="row-val">After instrument tee (PT/PG), before BV-2 and vessel</span></div>
+      <div class="card-row"><span class="row-label">Inlet</span><span class="row-val">Instrument tee outlet (coming from BV-1)</span></div>
+      <div class="card-row"><span class="row-label">Outlet</span><span class="row-val">Relief valve tee → BV-2 → PARR vessel</span></div>
+      <div class="card-row"><span class="row-label">Motor</span><span class="row-val">NEMA 17 stepper (⑰) bolts to valve body via custom bracket. 5mm→1/4" flex coupler connects motor shaft to 1/4" valve stem.</span></div>
+      <div class="card-row"><span class="row-label">Control</span><span class="row-val">A4988 driver: STEP←GPIO17, DIR←GPIO27, EN←GPIO22 (active LOW)</span></div>
+    </div>
+    <div class="card-note">This is the main PID-controlled flow valve. The adaptive gain scheduler adjusts Kp/Ki/Kd every 100 ms based on current pressure.</div>
+  </div>
+
+  <!-- ⑧ Relief Valve RV-1 -->
+  <div class="card">
+    <div class="card-top">
+      <span class="callout fluid">⑧</span>
+      <div class="card-title">
+        <div class="card-name">Relief Valve RV-1</div>
+        <div class="card-part">Swagelok SS-RL3S4 · 6,000 PSI rated · set at 4,350 PSI</div>
+      </div>
+      <span class="status-chip fluid">BUY — FLUID</span>
+    </div>
+    <div class="card-rows">
+      <div class="card-row"><span class="row-label">Location</span><span class="row-val">Tee branch between MNV-1 and BV-2 (or on the vessel outlet port)</span></div>
+      <div class="card-row"><span class="row-label">Outlet</span><span class="row-val">Vent line → fume hood or safe exhaust point</span></div>
+      <div class="card-row"><span class="row-label">Set pressure</span><span class="row-val">4,350 PSI (30 MPa) — specify when ordering from Swagelok distributor</span></div>
+    </div>
+    <div class="card-warn">Tell the distributor: <em>"SS-RL3S4, set pressure 4,350 PSI, CO₂ service."</em> The set pressure is factory-configured — you cannot adjust it in the field. Never use the Parker 442F42 (rated only 114 PSI).</div>
+  </div>
+
+  <!-- ⑨ Ball Valve BV-2 -->
+  <div class="card">
+    <div class="card-top">
+      <span class="callout fluid">⑨</span>
+      <div class="card-title">
+        <div class="card-name">Ball Valve BV-2 — Vessel Inlet</div>
+        <div class="card-part">Swagelok SS-83KS4 · 6,000 PSI · 1/4" tube</div>
+      </div>
+      <span class="status-chip fluid">BUY — FLUID</span>
+    </div>
+    <div class="card-rows">
+      <div class="card-row"><span class="row-label">Location</span><span class="row-val">Inlet port of the PARR vessel</span></div>
+      <div class="card-row"><span class="row-label">Inlet</span><span class="row-val">From MNV-1 / RV-1 tee</span></div>
+      <div class="card-row"><span class="row-label">Outlet</span><span class="row-val">PARR vessel inlet fitting</span></div>
+      <div class="card-row"><span class="row-label">Normal state</span><span class="row-val">OPEN during pressurize/hold. Close to isolate vessel from supply.</span></div>
+    </div>
+  </div>
+
+  <!-- ⑩ PARR Vessel -->
+  <div class="card">
+    <div class="card-top">
+      <span class="callout owned">⑩</span>
+      <div class="card-title">
+        <div class="card-name">PARR Pressure Vessel</div>
+        <div class="card-part">PARR 2302HC · S/N 4540-1803-78845A · 1 L · 316SS · MAWP 5,000 PSI @ 350°C</div>
+      </div>
+      <span class="status-chip owned">OWNED</span>
+    </div>
+    <div class="card-rows">
+      <div class="card-row"><span class="row-label">Location</span><span class="row-val">Center of bench, on insulated stand inside secondary containment</span></div>
+      <div class="card-row"><span class="row-label">Inlet port</span><span class="row-val">→ BV-2 (⑨)</span></div>
+      <div class="card-row"><span class="row-label">Outlet port</span><span class="row-val">→ BV-3 (⑪)</span></div>
+      <div class="card-row"><span class="row-label">Heating</span><span class="row-val">INKBIRD heater band/jacket around vessel body; setpoint 60°C</span></div>
+    </div>
+    <div class="card-note">CO₂ enters the supercritical phase at 7.38 MPa when temperature is above 31.1°C. At 60°C, it goes supercritical immediately upon crossing that pressure.</div>
+  </div>
+
+  <!-- ⑪ Ball Valve BV-3 -->
+  <div class="card">
+    <div class="card-top">
+      <span class="callout fluid">⑪</span>
+      <div class="card-title">
+        <div class="card-name">Ball Valve BV-3 — Vessel Outlet / Vent Isolation</div>
+        <div class="card-part">Swagelok SS-83KS4 · 6,000 PSI · 1/4" tube</div>
+      </div>
+      <span class="status-chip fluid">BUY — FLUID</span>
+    </div>
+    <div class="card-rows">
+      <div class="card-row"><span class="row-label">Location</span><span class="row-val">Vessel outlet port, before the solenoid vent valve</span></div>
+      <div class="card-row"><span class="row-label">Inlet</span><span class="row-val">PARR vessel outlet fitting</span></div>
+      <div class="card-row"><span class="row-label">Outlet</span><span class="row-val">Solenoid valve SV-1 (⑫) → vent</span></div>
+      <div class="card-row"><span class="row-label">Normal state</span><span class="row-val">OPEN during depressurize. CLOSED during pressurize/hold.</span></div>
+    </div>
+  </div>
+
+  <!-- ⑫ Vent Solenoid SV-1 -->
+  <div class="card is-danger">
+    <div class="card-top">
+      <span class="callout missing">⑫</span>
+      <div class="card-title">
+        <div class="card-name">Vent Solenoid Valve SV-1</div>
+        <div class="card-part">Parker Series 34 HP · or Asco 8290 HP · 24VDC NC · ≥6,000 PSI · 1/4"</div>
+      </div>
+      <span class="status-chip missing">MISSING — ADD TO ORDER</span>
+    </div>
+    <div class="card-rows">
+      <div class="card-row"><span class="row-label">Location</span><span class="row-val">After BV-3, on vent line to fume hood</span></div>
+      <div class="card-row"><span class="row-label">Inlet</span><span class="row-val">BV-3 outlet</span></div>
+      <div class="card-row"><span class="row-label">Outlet</span><span class="row-val">Vent line → fume hood / safe exhaust</span></div>
+      <div class="card-row"><span class="row-label">Control</span><span class="row-val">RPi GPIO 18 (hardware PWM) → Relay (⑱) → solenoid 24VDC coil</span></div>
+    </div>
+    <div class="card-warn"><strong>⚠ This part was missing from the original BOM.</strong> Standard solenoid valves are rated 150–300 PSI — they will rupture at 28 MPa. You need a high-pressure solenoid rated ≥ 6,000 PSI (≥ 41 MPa) with a normally-closed (NC) fail-safe configuration. Confirm rating with Parker or Asco before ordering. Estimated cost: $400–600.</div>
+  </div>
+
+</div><!-- /fluid cards -->
+
+<!-- ── Electronics ──────────────────────────────────────────────── -->
+<p class="section-label">Electronics &amp; Control</p>
+<div class="cards">
+
+  <!-- ⑬ PSU -->
+  <div class="card">
+    <div class="card-top">
+      <span class="callout elec">⑬</span>
+      <div class="card-title">
+        <div class="card-name">DIN Rail Power Supply 24VDC</div>
+        <div class="card-part">Dayton 33NT20 · 24VDC · 50W · Grainger</div>
+      </div>
+      <span class="status-chip elec">BUY — ELEC</span>
+    </div>
+    <div class="card-rows">
+      <div class="card-row"><span class="row-label">Location</span><span class="row-val">DIN rail inside panel enclosure</span></div>
+      <div class="card-row"><span class="row-label">Input</span><span class="row-val">120 VAC mains</span></div>
+      <div class="card-row"><span class="row-label">Powers</span><span class="row-val">Pressure transducer, relay coil, vent solenoid, stepper motor (via A4988)</span></div>
+    </div>
+  </div>
+
+  <!-- ⑭ A4988 Stepper Driver -->
+  <div class="card">
+    <div class="card-top">
+      <span class="callout elec">⑭</span>
+      <div class="card-title">
+        <div class="card-name">A4988 Stepper Motor Driver</div>
+        <div class="card-part">Pololu A4988 · 1/16 microstepping · Amazon/Pololu</div>
+      </div>
+      <span class="status-chip elec">BUY — ELEC</span>
+    </div>
+    <div class="card-rows">
+      <div class="card-row"><span class="row-label">Location</span><span class="row-val">Breadboard or PCB in electronics enclosure, add heatsink</span></div>
+      <div class="card-row"><span class="row-label">Logic pins</span><span class="row-val">STEP←GPIO17, DIR←GPIO27, EN←GPIO22 (active LOW)</span></div>
+      <div class="card-row"><span class="row-label">Microstep</span><span class="row-val">MS1=HIGH, MS2=HIGH, MS3=HIGH → 1/16 step (3,200 steps/rev)</span></div>
+      <div class="card-row"><span class="row-label">Motor out</span><span class="row-val">2A + 2B coil outputs → NEMA 17 (⑰)</span></div>
+      <div class="card-row"><span class="row-label">Motor power</span><span class="row-val">12–24VDC (use the PSU 24VDC rail). Set Vref for current limiting.</span></div>
+    </div>
+  </div>
+
+  <!-- ⑮ Raspberry Pi 4 -->
+  <div class="card">
+    <div class="card-top">
+      <span class="callout elec">⑮</span>
+      <div class="card-title">
+        <div class="card-name">Raspberry Pi 4 (4 GB)</div>
+        <div class="card-part">RPi4-4GB · Python 3.11 · Amazon / Adafruit</div>
+      </div>
+      <span class="status-chip elec">BUY — ELEC</span>
+    </div>
+    <div class="card-rows">
+      <div class="card-row"><span class="row-label">Location</span><span class="row-val">Electronics enclosure, on standoffs</span></div>
+      <div class="card-row"><span class="row-label">I²C</span><span class="row-val">SDA=GPIO2, SCL=GPIO3 → ADS1115 (I²C addr 0x48)</span></div>
+      <div class="card-row"><span class="row-label">Stepper</span><span class="row-val">GPIO17=STEP, GPIO27=DIR, GPIO22=EN → A4988</span></div>
+      <div class="card-row"><span class="row-label">Vent</span><span class="row-val">GPIO18 (hardware PWM ch.0) → Relay coil</span></div>
+      <div class="card-row"><span class="row-label">E-stop</span><span class="row-val">GPIO23=E-stop input (NC contact, pulled HIGH, trips on LOW)</span></div>
+      <div class="card-row"><span class="row-label">Software</span><span class="row-val">Set SIMULATION=False in config.py. Run: cd pressure_control && python3 main.py</span></div>
+    </div>
+  </div>
+
+  <!-- ⑯ ADS1115 -->
+  <div class="card">
+    <div class="card-top">
+      <span class="callout elec">⑯</span>
+      <div class="card-title">
+        <div class="card-name">ADS1115 16-bit ADC</div>
+        <div class="card-part">ADS1115 breakout · I²C · Adafruit / Amazon</div>
+      </div>
+      <span class="status-chip elec">BUY — ELEC</span>
+    </div>
+    <div class="card-rows">
+      <div class="card-row"><span class="row-label">Location</span><span class="row-val">Breadboard near RPi</span></div>
+      <div class="card-row"><span class="row-label">I²C addr</span><span class="row-val">ADDR pin → GND = address 0x48</span></div>
+      <div class="card-row"><span class="row-label">A0</span><span class="row-val">Pressure transducer signal through 250 Ω shunt (4-20 mA → 1-5 V)</span></div>
+      <div class="card-row"><span class="row-label">A1</span><span class="row-val">Thermocouple amplifier 0–5V output (0–100°C range)</span></div>
+      <div class="card-row"><span class="row-label">Power</span><span class="row-val">3.3V from RPi 3V3 pin</span></div>
+    </div>
+    <div class="card-note">Resolution: ±4.096V PGA → 0.125 mV/count. Over the 1–5V sensor range: ~0.15 PSI per count — far more than needed.</div>
+  </div>
+
+  <!-- ⑰ NEMA 17 Stepper Motor -->
+  <div class="card">
+    <div class="card-top">
+      <span class="callout elec">⑰</span>
+      <div class="card-title">
+        <div class="card-name">NEMA 17 Stepper Motor</div>
+        <div class="card-part">200 steps/rev · 5 mm shaft · Amazon</div>
+      </div>
+      <span class="status-chip elec">BUY — ELEC</span>
+    </div>
+    <div class="card-rows">
+      <div class="card-row"><span class="row-label">Location</span><span class="row-val">Mounted directly on SS-1RS4 needle valve body (MNV-1, ⑦)</span></div>
+      <div class="card-row"><span class="row-label">Coupler</span><span class="row-val">5mm-to-1/4" flexible shaft coupler connects motor shaft to valve stem</span></div>
+      <div class="card-row"><span class="row-label">Wiring</span><span class="row-val">4-wire bipolar: coil A (2 wires), coil B (2 wires) → A4988 motor outputs</span></div>
+      <div class="card-row"><span class="row-label">Mounting</span><span class="row-val">Fabricate a small aluminum bracket to bolt NEMA17 face to SS-1RS4 valve body</span></div>
+    </div>
+  </div>
+
+  <!-- ⑱ Relay Module -->
+  <div class="card">
+    <div class="card-top">
+      <span class="callout elec">⑱</span>
+      <div class="card-title">
+        <div class="card-name">Relay Module (GPIO → Solenoid)</div>
+        <div class="card-part">24VDC coil relay module · optocoupler isolated · Amazon + Grainger</div>
+      </div>
+      <span class="status-chip elec">BUY — ELEC</span>
+    </div>
+    <div class="card-rows">
+      <div class="card-row"><span class="row-label">Location</span><span class="row-val">Near RPi in electronics enclosure</span></div>
+      <div class="card-row"><span class="row-label">Input</span><span class="row-val">GPIO 18 (hardware PWM) from RPi — 3.3V logic via optocoupler</span></div>
+      <div class="card-row"><span class="row-label">Output</span><span class="row-val">Switches 24VDC to solenoid valve SV-1 coil (⑫)</span></div>
+      <div class="card-row"><span class="row-label">Note</span><span class="row-val">Use optocoupler-isolated relay module (Amazon $10) to protect RPi GPIO from inductive kickback</span></div>
+    </div>
+    <div class="card-note">BOM lists both a relay module (Amazon) and a DIN rail relay (Grainger). The relay module is the GPIO interface — the DIN rail relay is optional panel-mounted backup. One is sufficient.</div>
+  </div>
+
+  <!-- ⑲ INKBIRD Temperature Controller -->
+  <div class="card">
+    <div class="card-top">
+      <span class="callout owned">⑲</span>
+      <div class="card-title">
+        <div class="card-name">INKBIRD Temperature Controller</div>
+        <div class="card-part">60°C setpoint · ±0.01°C settled stability</div>
+      </div>
+      <span class="status-chip owned">OWNED</span>
+    </div>
+    <div class="card-rows">
+      <div class="card-row"><span class="row-label">Location</span><span class="row-val">Panel or bench, wired to heater band on PARR vessel</span></div>
+      <div class="card-row"><span class="row-label">Setpoint</span><span class="row-val">60°C — above CO₂ Tc (31.1°C), ensures supercritical phase above 7.38 MPa</span></div>
+      <div class="card-row"><span class="row-label">Sensor</span><span class="row-val">Thermocouple amplifier output → ADS1115 A1 (0–5V = 0–100°C)</span></div>
+      <div class="card-row"><span class="row-label">Stability</span><span class="row-val">±0.3–0.5°C during heat-up (first 30–60 s), then ±0.01°C settled</span></div>
+    </div>
+    <div class="card-note">Do not start pressurization until temperature is stable at 60°C (±0.5°C). The software gate MIN_START_TEMP_C = 55°C enforces this.</div>
+  </div>
+
+</div><!-- /electronics cards -->
+
+<!-- ── BOM Corrections Summary ───────────────────────────────────── -->
+<p class="section-label">BOM Corrections Summary</p>
+<div class="cards">
+  <div class="card wide">
+    <div class="card-rows">
+      <div class="card-row">
+        <span class="row-label">Fix #1</span>
+        <span class="row-val">
+          <strong>Pressure transducer</strong> — changed from K4708 (1–5V DC, ~$400) to
+          <strong>5DEK9</strong> (G17M0242F25000#, 4-20 mA, ~$200). K4708 has the wrong output type
+          for the 250 Ω shunt wiring already designed. 5DEK9 cuts cost in half.
+        </span>
+      </div>
+      <div class="card-row">
+        <span class="row-label">Fix #2</span>
+        <span class="row-val">
+          <strong>Relief valve</strong> — confirmed correct as Swagelok SS-RL3S4 (6,000 PSI). The
+          previously listed Parker 442F42 is rated only 114 PSI and would rupture at operating pressure.
+          Set pressure must be specified at 4,350 PSI (30 MPa) when ordering.
+        </span>
+      </div>
+      <div class="card-row">
+        <span class="row-label">Fix #3</span>
+        <span class="row-val">
+          <strong>Vent solenoid valve (⑫)</strong> — was completely missing from original BOM.
+          Added as required purchase. Must be rated ≥ 6,000 PSI with 24VDC NC coil.
+          Estimated $400–600 from Parker or Asco.
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /page -->
+</body>
+</html>
