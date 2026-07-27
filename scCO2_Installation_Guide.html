@@ -393,10 +393,10 @@ a { color: var(--accent); }
   <text x="16" y="253" font-size="8" letter-spacing="1.2" fill="#3498DB" font-weight="600">ELECTRONICS &amp; CONTROL</text>
 
   <!-- ── Main high-pressure pipeline (y=145) ─────────────────── -->
-  <!-- CV-1 to BV-1 -->
-  <line x1="172" y1="145" x2="290" y2="145" stroke="#3498DB" stroke-width="2.5" marker-end="url(#arrow)"/>
-  <!-- BV-1 to instrument tee -->
-  <line x1="316" y1="145" x2="378" y2="145" stroke="#3498DB" stroke-width="2.5"/>
+  <!-- HiP valve to CV-1 -->
+  <line x1="194" y1="145" x2="290" y2="145" stroke="#3498DB" stroke-width="2.5" marker-end="url(#arrow)"/>
+  <!-- CV-1 to instrument tee -->
+  <line x1="309" y1="145" x2="378" y2="145" stroke="#3498DB" stroke-width="2.5"/>
   <!-- instrument tee to MNV-1 -->
   <line x1="378" y1="145" x2="455" y2="145" stroke="#3498DB" stroke-width="2.5"/>
   <!-- MNV-1 outlet to BV-2 -->
@@ -458,23 +458,23 @@ a { color: var(--accent); }
   <circle cx="84" cy="114" r="8" fill="#27AE60"/>
   <text x="84" y="118" text-anchor="middle" font-size="8" fill="white" font-weight="700">②</text>
 
-  <!-- ③ Check Valve CV-1 (fluid to buy) -->
-  <!-- Triangle pointing right = check valve -->
-  <polygon points="172,135 172,155 191,145" fill="#E67E22" opacity="0.9"/>
-  <line x1="191" y1="135" x2="191" y2="155" stroke="#E67E22" stroke-width="2"/>
+  <!-- ③ HiP Valve — Booster Outlet (OWNED — already installed) -->
+  <!-- Diamond bowtie = ball valve, green = owned -->
+  <polygon points="172,145 183,135 194,145 183,155" fill="#27AE60" opacity="0.9"/>
+  <line x1="177" y1="145" x2="189" y2="145" stroke="white" stroke-width="1.5"/>
   <!-- callout ③ -->
-  <circle cx="178" cy="128" r="8" fill="#E67E22"/>
-  <text x="178" y="132" text-anchor="middle" font-size="8" fill="white" font-weight="700">③</text>
-  <text x="181" y="166" text-anchor="middle" font-size="8" fill="#E67E22" font-weight="600">CV-1</text>
+  <circle cx="176" cy="128" r="8" fill="#27AE60"/>
+  <text x="176" y="132" text-anchor="middle" font-size="8" fill="white" font-weight="700">③</text>
+  <text x="183" y="166" text-anchor="middle" font-size="8" fill="#27AE60" font-weight="600">HiP-V</text>
 
-  <!-- ④ Ball Valve BV-1 (fluid to buy) -->
-  <!-- Diamond bowtie symbol -->
-  <polygon points="290,145 303,135 316,145 303,155" fill="#E67E22" opacity="0.9"/>
-  <line x1="297" y1="145" x2="309" y2="145" stroke="white" stroke-width="1.5"/>
+  <!-- ④ Check Valve CV-1 (fluid to buy) -->
+  <!-- Triangle pointing right = check valve -->
+  <polygon points="290,135 290,155 309,145" fill="#E67E22" opacity="0.9"/>
+  <line x1="309" y1="135" x2="309" y2="155" stroke="#E67E22" stroke-width="2"/>
   <!-- callout ④ -->
   <circle cx="294" cy="128" r="8" fill="#E67E22"/>
   <text x="294" y="132" text-anchor="middle" font-size="8" fill="white" font-weight="700">④</text>
-  <text x="303" y="166" text-anchor="middle" font-size="8" fill="#E67E22" font-weight="600">BV-1</text>
+  <text x="299" y="166" text-anchor="middle" font-size="8" fill="#E67E22" font-weight="600">CV-1</text>
 
   <!-- ⑤ Pressure Transducer PT-1 (fluid/sensor to buy) -->
   <circle cx="378" cy="88" r="18" fill="#E67E22" opacity="0.85"/>
@@ -484,12 +484,12 @@ a { color: var(--accent); }
   <circle cx="359" cy="73" r="8" fill="#E67E22"/>
   <text x="359" y="77" text-anchor="middle" font-size="8" fill="white" font-weight="700">⑤</text>
 
-  <!-- ⑥ Pressure Gauge PG-1 (fluid to buy) -->
-  <circle cx="430" cy="88" r="18" fill="#E67E22" opacity="0.85"/>
+  <!-- ⑥ Pressure Gauge PG-1 (OWNED — Duro United already on vessel) -->
+  <circle cx="430" cy="88" r="18" fill="#27AE60" opacity="0.85"/>
   <text x="430" y="84" text-anchor="middle" font-size="8" fill="white" font-weight="700">PG</text>
-  <text x="430" y="95" text-anchor="middle" font-size="7.5" fill="white">K4201</text>
+  <text x="430" y="95" text-anchor="middle" font-size="7.5" fill="white">D-U</text>
   <!-- callout ⑥ -->
-  <circle cx="449" cy="73" r="8" fill="#E67E22"/>
+  <circle cx="449" cy="73" r="8" fill="#27AE60"/>
   <text x="449" y="77" text-anchor="middle" font-size="8" fill="white" font-weight="700">⑥</text>
 
   <!-- ⑦ Motorized Needle Valve MNV-1 (fluid to buy) -->
@@ -520,7 +520,7 @@ a { color: var(--accent); }
   <!-- callout ⑨ -->
   <circle cx="574" cy="128" r="8" fill="#E67E22"/>
   <text x="574" y="132" text-anchor="middle" font-size="8" fill="white" font-weight="700">⑨</text>
-  <text x="583" y="166" text-anchor="middle" font-size="8" fill="#E67E22" font-weight="600">BV-2</text>
+  <text x="583" y="166" text-anchor="middle" font-size="8" fill="#E67E22" font-weight="600">BV-1</text>
 
   <!-- ⑩ PARR Vessel (owned) -->
   <rect x="730" y="100" width="105" height="90" rx="8" fill="#27AE60" opacity="0.85"/>
@@ -532,13 +532,14 @@ a { color: var(--accent); }
   <circle cx="734" cy="101" r="8" fill="#27AE60"/>
   <text x="734" y="105" text-anchor="middle" font-size="8" fill="white" font-weight="700">⑩</text>
 
-  <!-- ⑪ Ball Valve BV-3 (fluid to buy) -->
-  <polygon points="870,145 883,135 896,145 883,155" fill="#E67E22" opacity="0.9"/>
-  <line x1="877" y1="145" x2="889" y2="145" stroke="white" stroke-width="1.5"/>
+  <!-- ⑪ SS-3NRM4 Needle Valve — Vessel Outlet (OWNED — already installed) -->
+  <!-- Hourglass = needle valve, green = owned -->
+  <polygon points="870,135 896,145 870,155" fill="#27AE60" opacity="0.85"/>
+  <polygon points="896,135 870,145 896,155" fill="#27AE60" opacity="0.85"/>
   <!-- callout ⑪ -->
-  <circle cx="874" cy="128" r="8" fill="#E67E22"/>
+  <circle cx="874" cy="128" r="8" fill="#27AE60"/>
   <text x="874" y="132" text-anchor="middle" font-size="8" fill="white" font-weight="700">⑪</text>
-  <text x="883" y="166" text-anchor="middle" font-size="8" fill="#E67E22" font-weight="600">BV-3</text>
+  <text x="883" y="166" text-anchor="middle" font-size="8" fill="#27AE60" font-weight="600">3NRM4</text>
 
   <!-- ⑫ Solenoid Valve SV-1 (MISSING from BOM — danger) -->
   <rect x="960" y="133" width="26" height="24" rx="3" fill="#E74C3C" opacity="0.9"/>
@@ -687,41 +688,42 @@ a { color: var(--accent); }
     <div class="card-note">At 100 PSI drive air, outlet exceeds 28 MPa — the PID-controlled needle valve limits actual vessel pressure.</div>
   </div>
 
-  <!-- ③ Check Valve CV-1 -->
+  <!-- ③ HiP Valve — Booster Outlet (OWNED) -->
   <div class="card">
     <div class="card-top">
-      <span class="callout fluid">③</span>
+      <span class="callout owned">③</span>
       <div class="card-title">
-        <div class="card-name">Check Valve CV-1</div>
-        <div class="card-part">Swagelok SS-CHS4-5 · 6,000 PSI · 1/4" tube</div>
+        <div class="card-name">HiP Valve — Booster Outlet</div>
+        <div class="card-part">High Pressure Equipment (HiP) · manual shutoff · already installed on booster</div>
       </div>
-      <span class="status-chip fluid">BUY — FLUID</span>
+      <span class="status-chip owned">OWNED</span>
     </div>
     <div class="card-rows">
-      <div class="card-row"><span class="row-label">Location</span><span class="row-val">Immediately at booster outlet, before BV-1</span></div>
-      <div class="card-row"><span class="row-label">Inlet</span><span class="row-val">Booster high-pressure outlet (1/4" tube compression)</span></div>
-      <div class="card-row"><span class="row-label">Outlet</span><span class="row-val">Ball Valve BV-1 inlet (④)</span></div>
-      <div class="card-row"><span class="row-label">Purpose</span><span class="row-val">Prevents vessel pressure from back-driving the booster when it stops</span></div>
+      <div class="card-row"><span class="row-label">Location</span><span class="row-val">Directly on HII booster pump HP outlet — already installed</span></div>
+      <div class="card-row"><span class="row-label">Outlet</span><span class="row-val">Check Valve CV-1 (④)</span></div>
+      <div class="card-row"><span class="row-label">Purpose</span><span class="row-val">Manual shutoff for booster outlet. Replaces BV-1 from original BOM — no additional ball valve needed here.</span></div>
+      <div class="card-row"><span class="row-label">Normal state</span><span class="row-val">OPEN during pressurize/hold. Close only for maintenance or emergency.</span></div>
     </div>
-    <div class="card-note">Arrow on valve body must point away from booster (toward BV-1). 5 PSI cracking pressure — opens easily under normal flow.</div>
+    <div class="card-note">This existing HiP valve covers the BV-1 position from the original BOM. Saves ~$407.</div>
   </div>
 
-  <!-- ④ Ball Valve BV-1 -->
+  <!-- ④ Check Valve CV-1 -->
   <div class="card">
     <div class="card-top">
       <span class="callout fluid">④</span>
       <div class="card-title">
-        <div class="card-name">Ball Valve BV-1 — Inlet Isolation</div>
-        <div class="card-part">Swagelok SS-83KS4 · 6,000 PSI · 1/4" tube · PCTFE seats</div>
+        <div class="card-name">Check Valve CV-1</div>
+        <div class="card-part">Swagelok SS-CHS4-5 · 6,000 PSI · 1/4" tube · 5 PSI cracking pressure</div>
       </div>
       <span class="status-chip fluid">BUY — FLUID</span>
     </div>
     <div class="card-rows">
-      <div class="card-row"><span class="row-label">Location</span><span class="row-val">After CV-1, before the instrument tee (PT-1/PG-1)</span></div>
-      <div class="card-row"><span class="row-label">Inlet</span><span class="row-val">CV-1 outlet</span></div>
-      <div class="card-row"><span class="row-label">Outlet</span><span class="row-val">Instrument tee → PT-1 and PG-1</span></div>
-      <div class="card-row"><span class="row-label">Normal state</span><span class="row-val">OPEN during pressurize/hold. Close to isolate high-pressure supply for maintenance.</span></div>
+      <div class="card-row"><span class="row-label">Location</span><span class="row-val">After HiP valve (③), before instrument tee (PT-1 and PG-1)</span></div>
+      <div class="card-row"><span class="row-label">Inlet</span><span class="row-val">HiP valve outlet</span></div>
+      <div class="card-row"><span class="row-label">Outlet</span><span class="row-val">Instrument tee → PT-1 (⑤)</span></div>
+      <div class="card-row"><span class="row-label">Purpose</span><span class="row-val">Prevents vessel pressure from back-driving the booster when it stops</span></div>
     </div>
+    <div class="card-note">Arrow on valve body must point away from booster (toward tee). 5 PSI cracking pressure — opens easily under normal flow.</div>
   </div>
 
   <!-- ⑤ Pressure Transducer PT-1 -->
@@ -743,22 +745,23 @@ a { color: var(--accent); }
     <div class="card-warn">Order Grainger item <strong>5DEK9</strong>, not K4708. K4708 outputs 1–5V DC — incompatible with the 4-20 mA wiring. 5DEK9 outputs 4-20 mA as required.</div>
   </div>
 
-  <!-- ⑥ Pressure Gauge PG-1 -->
+  <!-- ⑥ Pressure Gauge PG-1 (OWNED — Duro United already on vessel) -->
   <div class="card">
     <div class="card-top">
-      <span class="callout fluid">⑥</span>
+      <span class="callout owned">⑥</span>
       <div class="card-title">
         <div class="card-name">Pressure Gauge PG-1 — Visual Backup</div>
-        <div class="card-part">Ashcroft 0–5000 PSI · K4201 · Grainger</div>
+        <div class="card-part">Duro United Instruments · 0–5000 PSI · already installed on vessel</div>
       </div>
-      <span class="status-chip fluid">BUY — FLUID</span>
+      <span class="status-chip owned">OWNED</span>
     </div>
     <div class="card-rows">
-      <div class="card-row"><span class="row-label">Location</span><span class="row-val">Second branch of the instrument tee (next to PT-1)</span></div>
-      <div class="card-row"><span class="row-label">Process</span><span class="row-val">1/4" Male NPT — no electrical wiring needed</span></div>
+      <div class="card-row"><span class="row-label">Location</span><span class="row-val">Already installed on PARR vessel port — no purchase needed</span></div>
+      <div class="card-row"><span class="row-label">Process</span><span class="row-val">NPT connection directly to vessel — no electrical wiring needed</span></div>
       <div class="card-row"><span class="row-label">Purpose</span><span class="row-val">Independent analog visual readout; safety check if electronics fail</span></div>
-      <div class="card-row"><span class="row-label">Mount</span><span class="row-val">Face toward operator for easy reading</span></div>
+      <div class="card-row"><span class="row-label">Note</span><span class="row-val">Do NOT also order K4201 — this gauge covers that role. Saves ~$100.</span></div>
     </div>
+    <div class="card-note">Duro United 0–5000 PSI gauge already on your vessel replaces K4201 from original BOM. No additional pressure gauge needed.</div>
   </div>
 
   <!-- ⑦ Motorized Needle Valve MNV-1 -->
@@ -787,7 +790,7 @@ a { color: var(--accent); }
       <span class="callout fluid">⑧</span>
       <div class="card-title">
         <div class="card-name">Relief Valve RV-1</div>
-        <div class="card-part">Swagelok SS-RL3S4 · 6,000 PSI rated · set at 4,350 PSI</div>
+        <div class="card-part">Swagelok SS-4R3A · 6,000 PSI rated · set at 4,350 PSI</div>
       </div>
       <span class="status-chip fluid">BUY — FLUID</span>
     </div>
@@ -796,7 +799,7 @@ a { color: var(--accent); }
       <div class="card-row"><span class="row-label">Outlet</span><span class="row-val">Vent line → fume hood or safe exhaust point</span></div>
       <div class="card-row"><span class="row-label">Set pressure</span><span class="row-val">4,350 PSI (30 MPa) — specify when ordering from Swagelok distributor</span></div>
     </div>
-    <div class="card-warn">Tell the distributor: <em>"SS-RL3S4, set pressure 4,350 PSI, CO₂ service."</em> The set pressure is factory-configured — you cannot adjust it in the field. Never use the Parker 442F42 (rated only 114 PSI).</div>
+    <div class="card-warn">Tell the distributor: <em>"SS-4R3A, set pressure 4,350 PSI, CO₂ service."</em> The set pressure is factory-configured — you cannot adjust it in the field. ⚠ SS-RL3S4 is LOW-pressure series (max 225 PSI) — it will blow open at operating pressure and is dangerous for this system. Must use SS-4R3A (high-pressure, 6,000 PSI rated).</div>
   </div>
 
   <!-- ⑨ Ball Valve BV-2 -->
@@ -804,8 +807,8 @@ a { color: var(--accent); }
     <div class="card-top">
       <span class="callout fluid">⑨</span>
       <div class="card-title">
-        <div class="card-name">Ball Valve BV-2 — Vessel Inlet</div>
-        <div class="card-part">Swagelok SS-83KS4 · 6,000 PSI · 1/4" tube</div>
+        <div class="card-name">Ball Valve BV-1 — Vessel Inlet (only ball valve needed)</div>
+        <div class="card-part">Swagelok SS-83KS4 · 6,000 PSI · 1/4" tube · PCTFE seats</div>
       </div>
       <span class="status-chip fluid">BUY — FLUID</span>
     </div>
@@ -830,28 +833,29 @@ a { color: var(--accent); }
     <div class="card-rows">
       <div class="card-row"><span class="row-label">Location</span><span class="row-val">Center of bench, on insulated stand inside secondary containment</span></div>
       <div class="card-row"><span class="row-label">Inlet port</span><span class="row-val">→ BV-2 (⑨)</span></div>
-      <div class="card-row"><span class="row-label">Outlet port</span><span class="row-val">→ BV-3 (⑪)</span></div>
+      <div class="card-row"><span class="row-label">Outlet port</span><span class="row-val">→ SS-3NRM4 needle valve (⑪) → solenoid vent (⑫)</span></div>
       <div class="card-row"><span class="row-label">Heating</span><span class="row-val">INKBIRD heater band/jacket around vessel body; setpoint 60°C</span></div>
     </div>
     <div class="card-note">CO₂ enters the supercritical phase at 7.38 MPa when temperature is above 31.1°C. At 60°C, it goes supercritical immediately upon crossing that pressure.</div>
   </div>
 
-  <!-- ⑪ Ball Valve BV-3 -->
+  <!-- ⑪ SS-3NRM4 — Vessel Outlet Needle Valve (OWNED) -->
   <div class="card">
     <div class="card-top">
-      <span class="callout fluid">⑪</span>
+      <span class="callout owned">⑪</span>
       <div class="card-title">
-        <div class="card-name">Ball Valve BV-3 — Vessel Outlet / Vent Isolation</div>
-        <div class="card-part">Swagelok SS-83KS4 · 6,000 PSI · 1/4" tube</div>
+        <div class="card-name">SS-3NRM4 Needle Valve — Vessel Outlet</div>
+        <div class="card-part">Swagelok SS-3NRM4 · 8,000 PSI · already installed on vessel outlet</div>
       </div>
-      <span class="status-chip fluid">BUY — FLUID</span>
+      <span class="status-chip owned">OWNED</span>
     </div>
     <div class="card-rows">
-      <div class="card-row"><span class="row-label">Location</span><span class="row-val">Vessel outlet port, before the solenoid vent valve</span></div>
+      <div class="card-row"><span class="row-label">Location</span><span class="row-val">Already installed on PARR vessel outlet port — no purchase needed</span></div>
       <div class="card-row"><span class="row-label">Inlet</span><span class="row-val">PARR vessel outlet fitting</span></div>
       <div class="card-row"><span class="row-label">Outlet</span><span class="row-val">Solenoid valve SV-1 (⑫) → vent</span></div>
-      <div class="card-row"><span class="row-label">Normal state</span><span class="row-val">OPEN during depressurize. CLOSED during pressurize/hold.</span></div>
+      <div class="card-row"><span class="row-label">Normal state</span><span class="row-val">OPEN (fully or partially) at all times during operation — solenoid SV-1 controls automated venting, not this valve</span></div>
     </div>
+    <div class="card-warn">⚠ This valve must remain OPEN during automated operation. The solenoid (⑫) is what opens/closes automatically. Only close this needle valve for maintenance or emergency manual isolation — closing it during operation blocks the solenoid and prevents automated depressurization.</div>
   </div>
 
   <!-- ⑫ Vent Solenoid SV-1 -->
