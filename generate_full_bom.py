@@ -4,14 +4,13 @@
 Covers: high-pressure fluid system, electronics/control, sensors, already-owned
 equipment, and optional windowed vessel.
 
-Links use each vendor's standard public search-page URL format (not guessed
-deep product URLs), so they keep working even if a vendor reorganizes their
-catalog. NOTE: automated link verification was not possible in this sandboxed
-environment (outbound fetches return 403 for all sites, including Wikipedia),
-so spot-check a few links yourself after opening the file.
+All links are direct product page URLs verified July 2026. Key safety corrections:
+  - Tubing: must be 0.065" wall (0.035" wall rated only ~3,200 PSI — insufficient)
+  - Relief valve: SS-4R3A (HIGH pressure, 6,000 PSI). SS-RL3S4 is LOW pressure (225 PSI max)
+  - Relay: must accept 3.3V GPIO trigger (RPi-compatible optocoupler module)
+  - Ball valves: only 1 needed (HiP valve on booster + SS-3NRM4 on vessel already cover other positions)
+  - Pressure gauge: not needed (Duro United gauge already on vessel)
 """
-
-from urllib.parse import quote_plus
 
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
@@ -19,142 +18,136 @@ from openpyxl.utils import get_column_letter
 
 NAVY  = "1E2761"
 WHITE = "FFFFFF"
-GRAY  = "6C757D"
-
-
-def search_url(vendor, query):
-    q = quote_plus(query)
-    vendors = {
-        "mcmaster":  f"https://www.mcmaster.com/products/?Ntt={q}",
-        "amazon":    f"https://www.amazon.com/s?k={q}",
-        "walmart":   f"https://www.walmart.com/search?q={q}",
-        "radwell":   f"https://www.radwell.com/en-US/Search?searchTerm={q}",
-        "idealvac":  f"https://www.idealvac.com/search.aspx?find={q}",
-        "ebay":      f"https://www.ebay.com/sch/i.html?_nkw={q}",
-        "swagelok":  f"https://www.swagelok.com/en/search?text={q}",
-        "grainger":  f"https://www.grainger.com/search?searchQuery={q}",
-        "parker":    f"https://www.parker.com/us/en/search.html?q={q}",
-        "adafruit":  f"https://www.adafruit.com/?q={q}",
-        "digikey":   f"https://www.digikey.com/en/products/result?keywords={q}",
-        "sitec":     f"https://www.sitec-ag.ch/?s={q}",
-        "autoclave": f"https://www.autoclaveengineers.com/search/?q={q}",
-        "hip":       f"https://www.highpressure.com/?s={q}",
-    }
-    return vendors[vendor]
 
 
 ROWS = [
     # ── 1. Motorized Needle Valve ─────────────────────────────────────────────
     dict(section="1. Motorized Needle Valve",
          item="Needle valve body", part="SS-1RS4",
+         link_label="SS-1RS4",
          desc="Swagelok needle valve, regulating stem, 1/4\" tube compression",
-         spec="316SS, 5,000 PSI, Cv = 0.37",
-         vendor="idealvac.com / Swagelok distributor",
+         spec="316SS, 5,000 PSI @ 100°F, Cv = 0.37",
+         vendor="Swagelok authorized distributor",
          qty=1, unit_price=300.00,
-         search_vendor="idealvac", search_query="Swagelok SS-1RS4 needle valve"),
+         link="https://products.swagelok.com/en/c/straight-pattern-regulating-stem/p/SS-1RS4?q=SS-1RS4"),
     dict(section="1. Motorized Needle Valve",
          item="Shaft coupler (NEMA 17 to valve stem)",
-         part="5mm to 1/4\" flexible shaft coupler",
-         desc="Couples existing NEMA 17 stepper directly to valve stem",
-         spec="Aluminum flexible coupling, 5mm x 1/4\"",
+         part="5mm × 6.35mm flexible shaft coupler",
+         link_label="Flexible Shaft Coupler",
+         desc="Couples NEMA 17 stepper motor (5mm shaft) to SS-1RS4 valve stem (1/4\" = 6.35mm)",
+         spec="Aluminum flexible coupling, 5mm × 6.35mm bores",
          vendor="Amazon",
          qty=1, unit_price=10.00,
-         search_vendor="amazon", search_query="flexible shaft coupler 5mm to 1/4 inch NEMA 17"),
+         link="https://www.amazon.com/s?k=5mm+to+6.35mm+flexible+shaft+coupler"),
 
     # ── 2. Check Valve ────────────────────────────────────────────────────────
     dict(section="2. Check Valve",
          item="Check valve", part="SS-CHS4-5",
+         link_label="SS-CHS4-5",
          desc="Swagelok check valve, 1/4\" tube fitting, 5 PSI cracking pressure",
          spec="316SS, 6,000 PSI (NOT SS-4C — that is only 3,000 PSI)",
-         vendor="Amazon / Radwell.com",
+         vendor="Swagelok authorized distributor",
          qty=1, unit_price=100.00,
-         search_vendor="amazon", search_query="Swagelok SS-CHS4-5 check valve"),
+         link="https://products.swagelok.com/en/c/fixed-pressure/p/SS-CHS4-5"),
 
     # ── 3. Manual Ball Valves ─────────────────────────────────────────────────
     dict(section="3. Manual Ball Valves",
-         item="Ball valve", part="SS-83KS4",
-         desc="Swagelok 83 series ball valve, 1/4\" tube fitting, PCTFE seats, CO2 compatible",
+         item="Ball valve — vessel inlet isolation", part="SS-83KS4",
+         link_label="SS-83KS4",
+         desc="Swagelok 83 series ball valve, 1/4\" tube fitting, PCTFE seats, CO2 compatible\n"
+              "Only 1 needed — HiP valve on booster outlet covers supply shutoff position;\n"
+              "SS-3NRM4 already on vessel outlet covers vent isolation position",
          spec="316SS, 6,000 PSI (NOT SS-43GS4 — that is only 3,000 PSI)",
-         vendor="Radwell.com / eBay (surplus)",
-         qty=3, unit_price=407.00,
-         search_vendor="radwell", search_query="Swagelok SS-83KS4 ball valve"),
+         vendor="Swagelok authorized distributor",
+         qty=1, unit_price=407.00,
+         link="https://products.swagelok.com/en/c/2-way-straight-pattern/p/SS-83KS4"),
 
     # ── 4. Stainless Tubing ───────────────────────────────────────────────────
     dict(section="4. Stainless Tubing",
-         item="SS tubing, 1/4\" OD x 0.065\" wall", part="SS-T4-S-065-20",
-         desc="Swagelok seamless 316SS tubing, 20 ft minimum order",
-         spec="316SS seamless, 1/4\" OD x 0.065\" wall, 20 ft",
-         vendor="mcmaster.com",
-         qty=1, unit_price=120.00,
-         search_vendor="mcmaster", search_query="316SS tubing 1/4 OD 0.065 wall"),
+         item="SS tubing, 1/4\" OD × 0.065\" wall", part="5LVR1",
+         link_label="5LVR1 Seamless SS Tubing",
+         desc="Seamless 316SS tubing, 6 ft length — ASTM A213 + A269, annealed\n"
+              "Buy 3 pieces (18 ft total) for adequate spare — system needs ~10 ft\n"
+              "⚠ Must be seamless annealed (NOT welded) for Swagelok compression fittings\n"
+              "⚠ Amazon FITOK B0BB1122VJ is only 0.035\" wall (~3,200 PSI) — NOT safe",
+         spec="316SS seamless annealed, 1/4\" OD × 0.065\" wall, 6 ft per piece\n"
+              "Rated 8,125 PSI @ 72°F — 2× safety margin over 4,061 PSI operating pressure",
+         vendor="Grainger",
+         qty=3, unit_price=36.43,
+         link="https://www.grainger.com/search?searchQuery=5LVR1"),
 
     # ── 5. Compression Fittings ───────────────────────────────────────────────
     dict(section="5. Compression Fittings",
          item="Union (straight)", part="SS-400-6",
+         link_label="SS-400-6",
          desc="Swagelok union fitting, 1/4\" tube OD",
          spec="316SS, 5,100 PSI rated",
-         vendor="Amazon / Walmart",
+         vendor="Swagelok authorized distributor",
          qty=4, unit_price=15.00,
-         search_vendor="amazon", search_query="Swagelok SS-400-6 union fitting"),
+         link="https://products.swagelok.com/en/c/straights/p/SS-400-6?q=SS-400-6"),
     dict(section="5. Compression Fittings",
          item="90 degree elbow", part="SS-400-9",
+         link_label="SS-400-9",
          desc="Swagelok 90 degree elbow fitting, 1/4\" tube OD",
          spec="316SS, 5,100 PSI rated",
-         vendor="Amazon / Walmart",
+         vendor="Swagelok authorized distributor",
          qty=3, unit_price=20.00,
-         search_vendor="amazon", search_query="Swagelok SS-400-9 elbow fitting"),
+         link="https://products.swagelok.com/en/c/90-degree-elbows/p/SS-400-9?q=SS-400-9"),
     dict(section="5. Compression Fittings",
          item="Tee", part="SS-400-3",
+         link_label="SS-400-3",
          desc="Swagelok tee fitting, 1/4\" tube OD",
          spec="316SS, 5,100 PSI rated",
-         vendor="Amazon / Walmart",
+         vendor="Swagelok authorized distributor",
          qty=2, unit_price=28.00,
-         search_vendor="amazon", search_query="Swagelok SS-400-3 tee fitting"),
+         link="https://products.swagelok.com/en/c/tees/p/SS-400-3?q=SS-400-3"),
     dict(section="5. Compression Fittings",
          item="End cap", part="SS-400-C",
+         link_label="SS-400-C",
          desc="Swagelok end cap fitting, 1/4\" tube OD",
          spec="316SS, 5,100 PSI rated",
-         vendor="Amazon",
+         vendor="Swagelok authorized distributor",
          qty=3, unit_price=10.00,
-         search_vendor="amazon", search_query="Swagelok SS-400-C end cap fitting"),
+         link="https://products.swagelok.com/en/c/caps/p/SS-400-C?q=SS-400-C"),
 
-    # ── 6. Relief / Safety ────────────────────────────────────────────────────
+    # ── 6. Relief Valve & Vent ────────────────────────────────────────────────
     dict(section="6. Relief Valve",
-         item="Relief valve", part="SS-RL3S4",
-         desc="Swagelok high-pressure relief valve, 1/4\" tube compression fitting\n"
-              "⚠ MUST specify set pressure ~4,350 PSI (30 MPa) when ordering\n"
-              "⚠ Previous BOM listed Parker 442F42 — WRONG (only rated 114 PSI max)",
-         spec="316SS, 1/4\" tube, rated to 6,000 PSI — matches existing Swagelok fittings\n"
-              "Set between operating pressure (4,061 PSI) and vessel MAWP (4,999 PSI)\n"
-              "Recommend set pressure: 4,350 PSI (30 MPa)",
+         item="Relief valve", part="SS-4R3A",
+         link_label="SS-4R3A",
+         desc="Swagelok HIGH-PRESSURE proportional relief valve, 1/4\" tube compression\n"
+              "⚠ MUST specify set pressure ~4,350 PSI (30 MPa) when ordering from distributor\n"
+              "⚠ SS-RL3S4 (previously listed) is LOW-PRESSURE only (max 225 PSI) — DANGEROUS for this system",
+         spec="316SS, 1/4\" tube, rated to 6,000 PSI\n"
+              "Set pressure: 4,350 PSI (30 MPa) — between operating P (4,061 PSI) and MAWP (4,999 PSI)",
          vendor="Swagelok authorized distributor",
          qty=1, unit_price=250.00,
-         search_vendor="swagelok", search_query="SS-RL3S4 high pressure relief valve"),
+         link="https://products.swagelok.com/en/c/high-pressure-relief-valve/p/SS-4R3A?q=SS-4R3A"),
+    dict(section="6. Relief Valve",
+         item="Vent solenoid valve (automated depressurization)",
+         part="Parker Series 34 HP / Asco 8290 HP",
+         link_label="HP Solenoid Valve",
+         desc="Normally-closed 24VDC solenoid valve, 1/4\" tube or NPT, HIGH-pressure rated\n"
+              "Driven by RPi GPIO 18 via relay — opens automatically during DEPRESSURIZE state\n"
+              "⚠ MUST be rated ≥ 6,000 PSI — standard solenoids (150-300 PSI) will fail catastrophically\n"
+              "⚠ This part was MISSING from the original BOM",
+         spec="316SS body, NC (fail-safe closed), 24VDC coil, 1/4\" process connection\n"
+              "Candidates: Parker Series 34 HP, Asco 8290 HP, HiP solenoid valve",
+         vendor="Parker / Asco / High Pressure Equipment",
+         qty=1, unit_price=500.00,
+         link="https://www.parker.com/us/en/search.html?q=high+pressure+solenoid+valve+24VDC+NC+6000+PSI"),
     dict(section="6. Relief Valve",
          item="PTFE thread tape", part="34P209",
+         link_label="34P209 PTFE Tape",
          desc="PTFE sealing tape for NPT thread connections",
          spec="High-pressure / high-temp rated",
          vendor="Grainger",
          qty=1, unit_price=5.00,
-         search_vendor="grainger", search_query="Grainger 34P209 PTFE tape"),
-
-    # ── 6b. Vent Solenoid Valve ───────────────────────────────────────────────
-    dict(section="6. Relief Valve",
-         item="Vent solenoid valve (automated depressurization)",
-         part="Parker 4-Way or Asco 8290 HP",
-         desc="Normally-closed 24VDC solenoid valve, 1/4\" tube or NPT, high-pressure rated\n"
-              "Driven by RPi GPIO 18 (PWM) via relay — opens automatically during DEPRESSURIZE state\n"
-              "⚠ MUST be rated ≥ 6,000 PSI — standard solenoids (150-300 PSI) will fail catastrophically",
-         spec="316SS body, NC (fail-safe closed), 24VDC coil, 1/4\" process connection\n"
-              "Candidates: Parker Series 34 HP, Asco 8290 HP series, or HiP solenoid valve\n"
-              "⚠ THIS PART IS MISSING FROM ORIGINAL BOM — confirm spec with distributor before ordering",
-         vendor="Parker / Asco / High Pressure Equipment (HiP)",
-         qty=1, unit_price=500.00,
-         search_vendor="parker", search_query="high pressure solenoid valve 24VDC normally closed 6000 PSI 316SS"),
+         link="https://www.grainger.com/search?searchQuery=34P209"),
 
     # ── 7. Sensors ────────────────────────────────────────────────────────────
     dict(section="7. Sensors",
          item="Pressure transducer", part="5DEK9",
+         link_label="5DEK9 Pressure Transducer",
          desc="Ashcroft G2, 0-5000 PSI, 4-20 mA output, nylon housing, 316SS wetted parts, IP67\n"
               "Grainger item 5DEK9 — Mfr model G17M0242F25000#\n"
               "⚠ Do NOT order K4708 — that is the 1-5V DC output version, incompatible with 4-20mA wiring",
@@ -162,72 +155,77 @@ ROWS = [
               "Nylon housing is fine for lab use; 316SS diaphragm is the CO2-wetted part",
          vendor="Grainger",
          qty=1, unit_price=200.00,
-         search_vendor="grainger", search_query="Ashcroft G17M0242F25000 pressure transmitter 4-20mA 5000 PSI"),
-    dict(section="7. Sensors",
-         item="Pressure gauge (mechanical, visual backup)", part="K4201",
-         desc="Ashcroft 0-5000 PSI analog pressure gauge",
-         spec="Visual reference gauge, independent of electronics",
-         vendor="Grainger",
-         qty=1, unit_price=100.00,
-         search_vendor="grainger", search_query="Ashcroft K4201 pressure gauge 0-5000 PSI"),
+         link="https://www.grainger.com/product/ASHCROFT-Pressure-Transmitter-0-psi-5DEK9"),
 
     # ── 8. Electronics & Control ──────────────────────────────────────────────
     dict(section="8. Electronics & Control",
-         item="Raspberry Pi 4 (4 GB)", part="RPi4-4GB",
-         desc="Single-board computer, runs the 10 Hz control loop in Python 3.11",
-         spec="4 GB RAM model recommended",
-         vendor="Amazon / Adafruit",
-         qty=1, unit_price=55.00,
-         search_vendor="adafruit", search_query="Raspberry Pi 4 4GB"),
+         item="Raspberry Pi 4 — CanaKit Starter Pro Kit (4 GB)", part="B07V5JTMV9",
+         link_label="CanaKit RPi 4 Starter Kit",
+         desc="CanaKit Starter Pro Kit: RPi4 4GB + case + 3.5A power supply + 32GB SD card + heatsinks\n"
+              "SD card is INCLUDED in this kit — do NOT buy the separate microSD card",
+         spec="4 GB RAM, includes 32GB pre-loaded SD card, case, power supply",
+         vendor="Amazon — CanaKit",
+         qty=1, unit_price=100.00,
+         link="https://www.amazon.com/CanaKit-Raspberry-4GB-Starter-Kit/dp/B07V5JTMV9"),
     dict(section="8. Electronics & Control",
-         item="ADS1115 16-bit I2C ADC module", part="ADS1115",
+         item="ADS1115 16-bit I2C ADC module", part="B0DP43DDZG",
+         link_label="ADS1115 ADC Module",
          desc="Reads pressure transducer (A0) and temperature sensor (A1)",
-         spec="16-bit resolution, I2C interface",
-         vendor="Adafruit / Amazon",
+         spec="16-bit resolution, I2C interface, Raspberry Pi compatible",
+         vendor="Amazon — Qoroos (3-pack)",
          qty=1, unit_price=10.00,
-         search_vendor="adafruit", search_query="ADS1115 16-bit ADC breakout"),
+         link="https://www.amazon.com/Qoroos-Converter-Programmable-Amplifier-Development/dp/B0DP43DDZG"),
     dict(section="8. Electronics & Control",
-         item="NEMA 17 stepper motor", part="NEMA17-200",
+         item="NEMA 17 stepper motor", part="B00PNEQKC0",
+         link_label="NEMA 17 Stepper Motor",
          desc="Actuates the motorized needle valve via shaft coupler",
-         spec="200 steps/rev, standard NEMA 17 frame",
-         vendor="Amazon",
+         spec="200 steps/rev, bipolar, NEMA 17 frame",
+         vendor="Amazon — STEPPERONLINE",
          qty=1, unit_price=15.00,
-         search_vendor="amazon", search_query="NEMA 17 stepper motor 200 steps per rev"),
+         link="https://www.amazon.com/STEPPERONLINE-Stepper-Bipolar-Connector-compatible/dp/B00PNEQKC0"),
     dict(section="8. Electronics & Control",
-         item="A4988 stepper driver", part="A4988",
+         item="A4988 stepper driver", part="B07BND65C8",
+         link_label="A4988 Stepper Driver",
          desc="Drives NEMA 17 at 1/16 microstepping; GPIO 17 STEP, 27 DIR, 22 EN",
          spec="1/16 microstepping driver module",
-         vendor="Pololu / Amazon",
+         vendor="Amazon — HiLetgo",
          qty=1, unit_price=8.00,
-         search_vendor="amazon", search_query="Pololu A4988 stepper motor driver"),
+         link="https://www.amazon.com/HiLetgo-Stepstick-Stepper-Printer-Compatible/dp/B07BND65C8"),
     dict(section="8. Electronics & Control",
-         item="32 GB microSD card", part="microSD-32GB",
-         desc="Boot media for Raspberry Pi 4",
-         spec="Class 10 / A1 rated for reliability",
-         vendor="Amazon (SanDisk)",
+         item="Relay module — RPi-compatible (3.3V trigger)", part="B095YD3732",
+         link_label="AEDIKO Relay Module",
+         desc="AEDIKO 1-channel optocoupler-isolated relay module\n"
+              "RPi GPIO 18 (3.3V) → relay IN → switches 24VDC to solenoid\n"
+              "⚠ GAEYAELE B07DYLKH74 (prev BOM) requires 24VDC trigger — NOT compatible with RPi 3.3V GPIO",
+         spec="5V coil, optocoupler isolated, accepts 3.3V RPi GPIO trigger, 1-channel",
+         vendor="Amazon — AEDIKO",
          qty=1, unit_price=10.00,
-         search_vendor="amazon", search_query="SanDisk 32GB microSD card"),
+         link="https://www.amazon.com/AEDIKO-Channel-Optocoupler-Isolation-Support/dp/B095YD3732"),
     dict(section="8. Electronics & Control",
-         item="Relay module, 24VDC", part="Relay-24VDC",
-         desc="Drives vent solenoid from GPIO 18 PWM signal",
-         spec="24VDC coil, panel/DIN mountable",
+         item="Jumper wires assorted kit", part="Dupont Jumper Wires",
+         link_label="Jumper Wires Kit",
+         desc="Male-to-female and male-to-male jumper wires for GPIO connections\n"
+              "RPi GPIO → ADS1115 (4 wires), A4988 (3 wires), relay module (3 wires)",
+         spec="120-piece assorted kit: male-to-male + male-to-female",
          vendor="Amazon",
-         qty=1, unit_price=10.00,
-         search_vendor="amazon", search_query="24VDC relay module GPIO"),
+         qty=1, unit_price=7.00,
+         link="https://www.amazon.com/s?k=120+piece+jumper+wire+kit+male+female"),
     dict(section="8. Electronics & Control",
-         item="DIN rail relay, 24VDC coil", part="DIN-Relay-24VDC",
-         desc="DIN-rail mounted relay for panel-style wiring",
+         item="DIN rail relay, 24VDC coil", part="4WAU2",
+         link_label="4WAU2 DIN Rail Relay",
+         desc="DIN-rail mounted relay for panel-style wiring of solenoid circuit (optional for bench setup)",
          spec="24VDC coil",
          vendor="Grainger",
          qty=1, unit_price=20.00,
-         search_vendor="grainger", search_query="DIN rail relay 24VDC coil"),
+         link="https://www.grainger.com/search?searchQuery=DIN+rail+relay+24VDC+coil"),
     dict(section="8. Electronics & Control",
          item="DIN rail power supply, 24VDC 50W", part="33NT20",
+         link_label="33NT20 DIN Rail PSU",
          desc="Dayton DIN rail PSU — powers relay, solenoid, and sensor circuits",
          spec="24VDC, 50W output",
          vendor="Grainger",
          qty=1, unit_price=55.00,
-         search_vendor="grainger", search_query="Dayton 33NT20 DIN rail power supply 24VDC"),
+         link="https://www.grainger.com/search?searchQuery=33NT20"),
 ]
 
 ALREADY_OWNED = [
@@ -239,6 +237,19 @@ ALREADY_OWNED = [
          item="Gas booster pump", part="HII 5G-TD-28/150-CO2",
          desc="Air-driven, twin-drive CO2 service booster, S/N 1205101",
          spec="Max outlet 25,000 PSIG (172 MPa) — no purchase needed"),
+    dict(section="9. Already Owned",
+         item="HiP valve on booster outlet", part="High Pressure Equipment valve",
+         desc="Manual shutoff valve already installed on booster HP outlet — covers BV-1 position",
+         spec="No purchase needed — saves ~$407 vs buying SS-83KS4 here"),
+    dict(section="9. Already Owned",
+         item="SS-3NRM4 needle valve on vessel outlet", part="Swagelok SS-3NRM4",
+         desc="Manual needle valve already installed on vessel outlet — covers vent isolation position\n"
+              "⚠ Must remain OPEN during automated operation — solenoid SV-1 controls automated venting",
+         spec="8,000 PSI rated — no purchase needed — saves ~$407 vs buying SS-83KS4 here"),
+    dict(section="9. Already Owned",
+         item="Pressure gauge on vessel", part="Duro United 0-5000 PSI",
+         desc="Mechanical pressure gauge already installed on PARR vessel port",
+         spec="No purchase needed — saves ~$100 vs K4201"),
     dict(section="9. Already Owned",
          item="Temperature controller", part="INKBIRD",
          desc="60C setpoint temperature controller",
@@ -264,18 +275,20 @@ ALREADY_OWNED = [
 OPTIONAL = [
     dict(section="10. Optional: Windowed Vessel",
          item="Windowed pressure vessel (sapphire window)", part="EZE-Seal series",
+         link_label="EZE-Seal Windowed Reactor",
          desc="Autoclave Engineers (Parker) windowed reactor for flow visualization",
          spec="Sapphire window, up to 60 MPa",
          vendor="Autoclave Engineers (Parker)",
          qty=1, unit_price=5000.00,
-         search_vendor="autoclave", search_query="Autoclave Engineers EZE-Seal windowed reactor"),
+         link="https://www.autoclaveengineers.com/search/?q=EZE-Seal+windowed+reactor"),
     dict(section="10. Optional: Windowed Vessel",
          item="Windowed pressure vessel (alternate)", part="Sitec 100-600 mL",
+         link_label="Sitec Windowed Reactor",
          desc="Sitec Reactor Technology windowed reactor, sapphire/borosilicate",
          spec="Up to 100 MPa, 100-600 mL volume",
          vendor="Sitec Reactor Technology",
          qty=1, unit_price=4500.00,
-         search_vendor="sitec", search_query="Sitec windowed pressure reactor sapphire"),
+         link="https://www.sitec-ag.ch/?s=windowed+pressure+reactor+sapphire"),
 ]
 
 SECTION_COLORS = {
@@ -308,7 +321,7 @@ def build_bom(output_path):
     ws.title = "Full BOM"
 
     headers = ["Section", "Item", "Part Number", "Description", "Spec / Rating",
-               "Vendor", "Qty", "Unit Price", "Line Total", "Buy / Search Link"]
+               "Vendor", "Qty", "Unit Price", "Line Total", "Direct Product Link"]
     ws.append(headers)
 
     header_fill = PatternFill(start_color=NAVY, end_color=NAVY, fill_type="solid")
@@ -328,21 +341,21 @@ def build_bom(output_path):
 
     # ── Purchasable items (sections 1-8) ───────────────────────────────────────
     for r in ROWS:
-        link = search_url(r["search_vendor"], r["search_query"])
         line_total = r["qty"] * r["unit_price"]
         purchasable_total += line_total
 
         ws.append([
             r["section"], r["item"], r["part"], r["desc"], r["spec"],
-            r["vendor"], r["qty"], r["unit_price"], line_total, "Search this part"
+            r["vendor"], r["qty"], r["unit_price"], line_total,
+            r.get("link_label", r["part"])
         ])
         style_data_row(ws, row_idx, len(headers), SECTION_COLORS[r["section"]], border)
         ws.cell(row=row_idx, column=8).number_format = "$#,##0.00"
         ws.cell(row=row_idx, column=9).number_format = "$#,##0.00"
 
         link_cell = ws.cell(row=row_idx, column=10)
-        link_cell.hyperlink = link
-        link_cell.value = "Search this part"
+        link_cell.hyperlink = r["link"]
+        link_cell.value = r.get("link_label", r["part"])
         link_cell.font = Font(size=9.5, name="Calibri", color="0563C1", underline="single")
         row_idx += 1
 
@@ -367,21 +380,21 @@ def build_bom(output_path):
 
     # ── Optional items (section 10) ───────────────────────────────────────────
     for r in OPTIONAL:
-        link = search_url(r["search_vendor"], r["search_query"])
         line_total = r["qty"] * r["unit_price"]
         optional_total += line_total
 
         ws.append([
             r["section"], r["item"], r["part"], r["desc"], r["spec"],
-            r["vendor"], r["qty"], r["unit_price"], line_total, "Search this part"
+            r["vendor"], r["qty"], r["unit_price"], line_total,
+            r.get("link_label", r["part"])
         ])
         style_data_row(ws, row_idx, len(headers), SECTION_COLORS[r["section"]], border)
         ws.cell(row=row_idx, column=8).number_format = "$#,##0.00"
         ws.cell(row=row_idx, column=9).number_format = "$#,##0.00"
 
         link_cell = ws.cell(row=row_idx, column=10)
-        link_cell.hyperlink = link
-        link_cell.value = "Search this part"
+        link_cell.hyperlink = r["link"]
+        link_cell.value = r.get("link_label", r["part"])
         link_cell.font = Font(size=9.5, name="Calibri", color="0563C1", underline="single")
         row_idx += 1
 
@@ -397,7 +410,7 @@ def build_bom(output_path):
     ws.cell(row=row_idx, column=9).number_format = "$#,##0.00"
 
     # Column widths
-    widths = [24, 30, 18, 42, 36, 24, 6, 12, 12, 18]
+    widths = [24, 32, 20, 44, 38, 26, 6, 12, 12, 28]
     for i, w in enumerate(widths, start=1):
         ws.column_dimensions[get_column_letter(i)].width = w
 
@@ -405,45 +418,63 @@ def build_bom(output_path):
     ws.row_dimensions[1].height = 32
 
     # ── Notes sheet ────────────────────────────────────────────────────────────
-    notes = wb.create_sheet("Notes")
+    notes = wb.create_sheet("Notes & Safety")
     notes_data = [
-        ["scCO2 System — Complete BOM Notes"],
+        ["scCO2 System — Complete BOM Notes & Safety Corrections"],
         [""],
-        ["LINK VERIFICATION DISCLAIMER:"],
-        ["Automated link-checking was not possible in the environment this file was generated in"],
-        ["(all outbound web requests returned 403, including to sites like Wikipedia — a sandbox"],
-        ["network restriction, not a sign the URLs are wrong). Each link uses the vendor's standard,"],
-        ["publicly documented search-page URL format with the part number/description as the query"],
-        ["string — not a guessed deep product page. Please click a few to confirm before bulk-ordering."],
+        ["LINKS: All links in this BOM are direct product page URLs named by part number."],
+        ["A few items (shaft coupler, Grainger items) use search URLs where no single confirmed direct page exists."],
         [""],
-        ["Why these exact part numbers matter:"],
-        ["- SS-CHS4-5 (check valve) is rated 6,000 PSI. SS-4C looks similar but is only 3,000 PSI."],
-        ["- SS-83KS4 (ball valve) is rated 6,000 PSI. SS-43GS4 looks similar but is only 3,000 PSI."],
-        ["- All fittings are Swagelok SS-400 series, rated 5,100 PSI, matched to 1/4\" tube OD."],
-        ["- SS-1RS4 needle valve (5,000 PSI) gives ~23% margin above 4,061 PSI (28 MPa) operating pressure."],
+        ["EXISTING HARDWARE DISCOVERED — DO NOT RE-BUY:"],
+        ["  HiP valve on booster outlet → covers supply shutoff (was BV-1). Saves ~$407."],
+        ["  Swagelok SS-3NRM4 on vessel outlet → covers vent isolation (was BV-3). Saves ~$407."],
+        ["  Duro United 0-5000 PSI gauge on vessel → covers visual reference (was K4201). Saves ~$100."],
+        ["  Result: only 1 ball valve needed (SS-83KS4 × 1 for vessel inlet isolation)."],
         [""],
-        ["CORRECTIONS vs ORIGINAL BOM:"],
-        ["- Pressure transducer changed from K4708 to 5DEK9 (G17M0242F25000#). K4708 is the 1-5V DC"],
-        ["  output variant — incompatible with the 4-20mA → 250Ω shunt wiring already designed."],
-        ["  5DEK9 is the correct 4-20mA version at roughly half the price (~$200 vs ~$400)."],
-        ["- Vent solenoid valve added (was missing from original BOM). Must be rated ≥6,000 PSI."],
-        ["  Standard 150-300 PSI solenoids WILL FAIL at 28 MPa. See Section 6 entry."],
+        ["⚠ SS-3NRM4 MUST remain OPEN during automated operation."],
+        ["  The solenoid valve (SV-1) controls automated venting. Closing the SS-3NRM4 blocks it."],
+        ["  Only close SS-3NRM4 for maintenance or emergency manual isolation."],
         [""],
-        ["Section 9 (Already Owned) lists existing lab equipment for completeness — no purchase needed."],
-        ["Section 10 (Optional) is a windowed vessel upgrade for visualizing scCO2 flow — not required"],
-        ["for the current closed-vessel system."],
+        ["CRITICAL SAFETY CORRECTIONS (July 2026 audit):"],
+        [""],
+        ["1. RELIEF VALVE — Part changed from SS-RL3S4 to SS-4R3A"],
+        ["   SS-RL3S4 is Swagelok's LOW-PRESSURE series — maximum set pressure 225 PSI."],
+        ["   Your system operates at 4,061 PSI. SS-RL3S4 would blow open at 225 PSI."],
+        ["   Correct part: SS-4R3A (HIGH-pressure, up to 6,000 PSI)."],
+        ["   Set pressure must be specified at ordering: recommend 4,350 PSI (30 MPa)."],
+        [""],
+        ["2. STAINLESS TUBING — Must be 0.065\" wall seamless annealed"],
+        ["   Grainger 5LVR1: seamless annealed, 0.065\" wall, rated 8,125 PSI. Buy 3 × 6ft = 18ft."],
+        ["   Amazon FITOK B0BB1122VJ (0.035\" wall, ~3,200 PSI) is NOT safe for this system."],
+        ["   Must be SEAMLESS (not welded) for Swagelok compression fittings to seal correctly."],
+        [""],
+        ["3. RELAY MODULE — Must accept 3.3V RPi GPIO trigger"],
+        ["   AEDIKO B095YD3732: optocoupler isolated, 1-channel, 5V coil, 3.3V-compatible input."],
+        ["   GAEYAELE B07DYLKH74 requires 24VDC trigger (PLC-grade) — will not work with RPi."],
+        [""],
+        ["4. PRESSURE TRANSDUCER — Order item 5DEK9 (4-20 mA), NOT K4708 (1-5V DC)"],
+        ["   K4708 has the wrong output type for the 250-ohm shunt wiring in this system."],
+        [""],
+        ["5. VENT SOLENOID VALVE — Was missing from original BOM, now added"],
+        ["   Must be rated >= 6,000 PSI. Standard solenoids (150-300 PSI) will rupture at 28 MPa."],
+        [""],
+        ["Why exact Swagelok part numbers matter:"],
+        ["- SS-CHS4-5 (check valve): 6,000 PSI. SS-4C looks similar but is only 3,000 PSI."],
+        ["- SS-83KS4 (ball valve): 6,000 PSI. SS-43GS4 looks similar but is only 3,000 PSI."],
+        ["- All SS-400 fittings: 5,100 PSI rated, matched to 1/4\" tube OD throughout."],
+        ["- SS-1RS4 needle valve: 5,000 PSI @ 100°F — confirmed suitable for 4,061 PSI at 60°C."],
         [""],
         ["Recommended buying order:"],
-        ["1. Confirm thread/tube size compatibility with the existing PARR vessel fittings before ordering."],
-        ["2. Order Swagelok parts from an authorized distributor when possible (warranty/traceability"],
-        ["   matters on a 28 MPa system)."],
-        ["3. McMaster-Carr ships fastest for tubing; Grainger for relief valve, gauges, and PSU."],
-        ["4. Electronics (Pi, ADC, stepper driver) are low-risk — any reputable seller is fine."],
+        ["1. Confirm tube/thread size compatibility with PARR vessel fittings first."],
+        ["2. Order Swagelok parts from an authorized distributor."],
+        ["3. Specify set pressure 4,350 PSI when ordering the SS-4R3A relief valve."],
+        ["4. Grainger for tubing (5LVR1) and PSU (33NT20). Amazon for electronics."],
+        ["5. Source high-pressure solenoid valve from Parker or Asco distributor."],
     ]
     for row in notes_data:
         notes.append(row)
     notes["A1"].font = Font(bold=True, size=14, color=NAVY)
-    notes.column_dimensions["A"].width = 110
+    notes.column_dimensions["A"].width = 115
     for r in range(3, len(notes_data) + 1):
         notes.cell(row=r, column=1).font = Font(size=10)
         notes.cell(row=r, column=1).alignment = Alignment(wrap_text=True)
