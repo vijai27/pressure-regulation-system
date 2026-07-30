@@ -395,32 +395,33 @@ a { color: var(--accent); }
   <!-- ── Main high-pressure pipeline (y=145) ─────────────────── -->
   <!-- HiP valve to CV-1 -->
   <line x1="194" y1="145" x2="290" y2="145" stroke="#3498DB" stroke-width="2.5" marker-end="url(#arrow)"/>
-  <!-- CV-1 to instrument tee -->
+  <!-- CV-1 to RV-1 tee -->
   <line x1="309" y1="145" x2="378" y2="145" stroke="#3498DB" stroke-width="2.5"/>
-  <!-- instrument tee to MNV-1 -->
+  <!-- RV-1 tee to MNV-1 -->
   <line x1="378" y1="145" x2="455" y2="145" stroke="#3498DB" stroke-width="2.5"/>
-  <!-- MNV-1 outlet to BV-2 -->
+  <!-- MNV-1 outlet to BV-1 -->
   <line x1="488" y1="145" x2="570" y2="145" stroke="#3498DB" stroke-width="2.5"/>
-  <!-- BV-2 to vessel inlet -->
-  <line x1="596" y1="145" x2="730" y2="145" stroke="#3498DB" stroke-width="2.5"/>
-  <!-- vessel outlet to BV-3 -->
+  <!-- BV-1 to PT-1 tee -->
+  <line x1="596" y1="145" x2="650" y2="145" stroke="#3498DB" stroke-width="2.5"/>
+  <!-- PT-1 tee to vessel inlet -->
+  <line x1="650" y1="145" x2="730" y2="145" stroke="#3498DB" stroke-width="2.5"/>
+  <!-- vessel outlet to SS-3NRM4 -->
   <line x1="835" y1="145" x2="870" y2="145" stroke="#3498DB" stroke-width="2.5"/>
-  <!-- BV-3 to SV-1 -->
+  <!-- SS-3NRM4 to SV-1 -->
   <line x1="896" y1="145" x2="960" y2="145" stroke="#3498DB" stroke-width="2.5"/>
   <!-- SV-1 to vent arrow -->
   <line x1="986" y1="145" x2="1055" y2="145" stroke="#7F8C8D" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrow-vent)"/>
 
-  <!-- Instrument tee branch (up) -->
+  <!-- Relief valve tee (at x=378, between CV-1 and MNV-1) -->
   <line x1="378" y1="145" x2="378" y2="88" stroke="#3498DB" stroke-width="2.5"/>
-  <!-- PT-1 to PG-1 branch -->
-  <line x1="378" y1="88" x2="430" y2="88" stroke="#3498DB" stroke-width="2.5"/>
+  <line x1="378" y1="88" x2="340" y2="88" stroke="#7F8C8D" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrow-vent)"/>
 
-  <!-- Relief valve tee (at x=530) -->
-  <line x1="530" y1="145" x2="530" y2="88" stroke="#3498DB" stroke-width="2.5"/>
-  <line x1="530" y1="88" x2="590" y2="88" stroke="#7F8C8D" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#arrow-vent)"/>
+  <!-- PT-1 tee branch (up, vessel side — measures actual vessel pressure) -->
+  <line x1="650" y1="145" x2="650" y2="88" stroke="#3498DB" stroke-width="2.5"/>
 
   <!-- Vent label -->
   <text x="1058" y="149" font-size="9" fill="#7F8C8D" font-weight="600">VENT / HOOD</text>
+  <text x="290" y="84" font-size="9" fill="#7F8C8D" font-weight="600">VENT</text>
   <text x="593" y="84" font-size="9" fill="#7F8C8D" font-weight="600">VENT</text>
 
   <!-- ── Booster to CV-1 ──────────────────────────────────── -->
@@ -476,21 +477,13 @@ a { color: var(--accent); }
   <text x="294" y="132" text-anchor="middle" font-size="8" fill="white" font-weight="700">④</text>
   <text x="299" y="166" text-anchor="middle" font-size="8" fill="#E67E22" font-weight="600">CV-1</text>
 
-  <!-- ⑤ Pressure Transducer PT-1 (fluid/sensor to buy) -->
-  <circle cx="378" cy="88" r="18" fill="#E67E22" opacity="0.85"/>
-  <text x="378" y="84" text-anchor="middle" font-size="8" fill="white" font-weight="700">PT</text>
-  <text x="378" y="95" text-anchor="middle" font-size="7.5" fill="white">5DEK9</text>
+  <!-- ⑤ Pressure Transducer PT-1 (vessel side — measures actual vessel pressure) -->
+  <circle cx="650" cy="88" r="18" fill="#E67E22" opacity="0.85"/>
+  <text x="650" y="84" text-anchor="middle" font-size="8" fill="white" font-weight="700">PT</text>
+  <text x="650" y="95" text-anchor="middle" font-size="7.5" fill="white">5DEK9</text>
   <!-- callout ⑤ -->
-  <circle cx="359" cy="73" r="8" fill="#E67E22"/>
-  <text x="359" y="77" text-anchor="middle" font-size="8" fill="white" font-weight="700">⑤</text>
-
-  <!-- ⑥ Pressure Gauge PG-1 (OWNED — Duro United already on vessel) -->
-  <circle cx="430" cy="88" r="18" fill="#27AE60" opacity="0.85"/>
-  <text x="430" y="84" text-anchor="middle" font-size="8" fill="white" font-weight="700">PG</text>
-  <text x="430" y="95" text-anchor="middle" font-size="7.5" fill="white">D-U</text>
-  <!-- callout ⑥ -->
-  <circle cx="449" cy="73" r="8" fill="#27AE60"/>
-  <text x="449" y="77" text-anchor="middle" font-size="8" fill="white" font-weight="700">⑥</text>
+  <circle cx="631" cy="73" r="8" fill="#E67E22"/>
+  <text x="631" y="77" text-anchor="middle" font-size="8" fill="white" font-weight="700">⑤</text>
 
   <!-- ⑦ Motorized Needle Valve MNV-1 (fluid to buy) -->
   <!-- Needle valve: hourglass + actuator block on top -->
@@ -503,16 +496,16 @@ a { color: var(--accent); }
   <text x="455" y="112" text-anchor="middle" font-size="8" fill="white" font-weight="700">⑦</text>
   <text x="471" y="170" text-anchor="middle" font-size="8" fill="#E67E22" font-weight="600">MNV-1</text>
 
-  <!-- ⑧ Relief Valve RV-1 (fluid to buy) -->
-  <polygon points="519,88 530,70 541,88" fill="#E67E22" opacity="0.85"/>
-  <line x1="525" y1="88" x2="535" y2="88" stroke="#E67E22" stroke-width="2"/>
-  <line x1="530" y1="95" x2="530" y2="108" stroke="#E67E22" stroke-width="2"/>
+  <!-- ⑧ Relief Valve RV-1 — tees off between CV-1 and MNV-1, vents left -->
+  <polygon points="367,88 378,70 389,88" fill="#E67E22" opacity="0.85"/>
+  <line x1="373" y1="88" x2="383" y2="88" stroke="#E67E22" stroke-width="2"/>
+  <line x1="378" y1="95" x2="378" y2="108" stroke="#E67E22" stroke-width="2"/>
   <!-- spring symbol -->
-  <path d="M525,97 Q527,93 530,93 Q533,93 535,97 Q537,101 530,101" stroke="#E67E22" stroke-width="1.5" fill="none"/>
+  <path d="M373,97 Q375,93 378,93 Q381,93 383,97 Q385,101 378,101" stroke="#E67E22" stroke-width="1.5" fill="none"/>
   <!-- callout ⑧ -->
-  <circle cx="519" cy="63" r="8" fill="#E67E22"/>
-  <text x="519" y="67" text-anchor="middle" font-size="8" fill="white" font-weight="700">⑧</text>
-  <text x="530" y="120" text-anchor="middle" font-size="8" fill="#E67E22" font-weight="600">RV-1</text>
+  <circle cx="394" cy="63" r="8" fill="#E67E22"/>
+  <text x="394" y="67" text-anchor="middle" font-size="8" fill="white" font-weight="700">⑧</text>
+  <text x="378" y="120" text-anchor="middle" font-size="8" fill="#E67E22" font-weight="600">RV-1</text>
 
   <!-- ⑨ Ball Valve BV-2 (fluid to buy) -->
   <polygon points="570,145 583,135 596,145 583,155" fill="#E67E22" opacity="0.9"/>
@@ -522,12 +515,13 @@ a { color: var(--accent); }
   <text x="574" y="132" text-anchor="middle" font-size="8" fill="white" font-weight="700">⑨</text>
   <text x="583" y="166" text-anchor="middle" font-size="8" fill="#E67E22" font-weight="600">BV-1</text>
 
-  <!-- ⑩ PARR Vessel (owned) -->
+  <!-- ⑩ PARR Vessel (owned) — PG-1 Duro United gauge is on a vessel port -->
   <rect x="730" y="100" width="105" height="90" rx="8" fill="#27AE60" opacity="0.85"/>
-  <text x="782" y="130" text-anchor="middle" font-size="10" fill="white" font-weight="700">PARR</text>
-  <text x="782" y="144" text-anchor="middle" font-size="9" fill="white">VESSEL</text>
-  <text x="782" y="157" text-anchor="middle" font-size="8" fill="white">1 L · 60°C</text>
-  <text x="782" y="168" text-anchor="middle" font-size="7.5" fill="#90EE90">5000 PSI MAWP</text>
+  <text x="782" y="125" text-anchor="middle" font-size="10" fill="white" font-weight="700">PARR</text>
+  <text x="782" y="138" text-anchor="middle" font-size="9" fill="white">VESSEL</text>
+  <text x="782" y="150" text-anchor="middle" font-size="8" fill="white">1 L · 60°C</text>
+  <text x="782" y="161" text-anchor="middle" font-size="7.5" fill="#90EE90">5000 PSI MAWP</text>
+  <text x="782" y="172" text-anchor="middle" font-size="7" fill="#90EE90">PG-1 on vessel port ⑥</text>
   <!-- callout ⑩ -->
   <circle cx="734" cy="101" r="8" fill="#27AE60"/>
   <text x="734" y="105" text-anchor="middle" font-size="8" fill="white" font-weight="700">⑩</text>
@@ -616,9 +610,9 @@ a { color: var(--accent); }
   <!-- A4988 → NEMA17 (at valve) -->
   <line x1="212" y1="258" x2="465" y2="125" stroke="#8E44AD" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-ctrl)"/>
 
-  <!-- PT-1 → ADS1115 (measurement signal) -->
-  <line x1="394" y1="88" x2="560" y2="265" stroke="#16A085" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-meas)"/>
-  <text x="490" y="195" font-size="7.5" fill="#16A085" transform="rotate(-45,490,195)">4-20mA / 250Ω</text>
+  <!-- PT-1 → ADS1115 (measurement signal, from vessel-side position) -->
+  <line x1="666" y1="88" x2="594" y2="258" stroke="#16A085" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-meas)"/>
+  <text x="648" y="180" font-size="7.5" fill="#16A085" transform="rotate(-75,648,180)">4-20mA / 250Ω</text>
 
   <!-- ADS1115 → RPi (I2C) -->
   <line x1="560" y1="276" x2="448" y2="276" stroke="#16A085" stroke-width="1.5" stroke-dasharray="4,3" marker-end="url(#arrow-meas)"/>
@@ -718,9 +712,9 @@ a { color: var(--accent); }
       <span class="status-chip fluid">BUY — FLUID</span>
     </div>
     <div class="card-rows">
-      <div class="card-row"><span class="row-label">Location</span><span class="row-val">After HiP valve (③), before instrument tee (PT-1 and PG-1)</span></div>
+      <div class="card-row"><span class="row-label">Location</span><span class="row-val">After HiP valve (③), before Relief Valve tee (⑧) and Needle Valve (⑦)</span></div>
       <div class="card-row"><span class="row-label">Inlet</span><span class="row-val">HiP valve outlet</span></div>
-      <div class="card-row"><span class="row-label">Outlet</span><span class="row-val">Instrument tee → PT-1 (⑤)</span></div>
+      <div class="card-row"><span class="row-label">Outlet</span><span class="row-val">Tee → Relief Valve RV-1 (⑧), then Motorized Needle Valve MNV-1 (⑦)</span></div>
       <div class="card-row"><span class="row-label">Purpose</span><span class="row-val">Prevents vessel pressure from back-driving the booster when it stops</span></div>
     </div>
     <div class="card-note">Arrow on valve body must point away from booster (toward tee). 5 PSI cracking pressure — opens easily under normal flow.</div>
@@ -737,8 +731,8 @@ a { color: var(--accent); }
       <span class="status-chip fluid">BUY — FLUID</span>
     </div>
     <div class="card-rows">
-      <div class="card-row"><span class="row-label">Location</span><span class="row-val">Branch port of tee on high-pressure line (parallel with PG-1)</span></div>
-      <div class="card-row"><span class="row-label">Process</span><span class="row-val">1/4" Male NPT screwed into Swagelok union or tee body</span></div>
+      <div class="card-row"><span class="row-label">Location</span><span class="row-val">Vessel-side tee between BV-1 (⑨) and vessel (⑩) — measures actual vessel pressure</span></div>
+      <div class="card-row"><span class="row-label">Process</span><span class="row-val">1/4" Male NPT screwed into Swagelok tee body on vessel inlet side</span></div>
       <div class="card-row"><span class="row-label">Wiring</span><span class="row-val">2-wire: +24VDC and signal. Signal wire through 250 Ω shunt → ADS1115 A0 (1–5V)</span></div>
       <div class="card-row"><span class="row-label">Power</span><span class="row-val">9–36 VDC (connect to 24VDC PSU)</span></div>
     </div>
@@ -775,9 +769,9 @@ a { color: var(--accent); }
       <span class="status-chip fluid">BUY — FLUID</span>
     </div>
     <div class="card-rows">
-      <div class="card-row"><span class="row-label">Location</span><span class="row-val">After instrument tee (PT/PG), before BV-2 and vessel</span></div>
-      <div class="card-row"><span class="row-label">Inlet</span><span class="row-val">Instrument tee outlet (coming from BV-1)</span></div>
-      <div class="card-row"><span class="row-label">Outlet</span><span class="row-val">Relief valve tee → BV-2 → PARR vessel</span></div>
+      <div class="card-row"><span class="row-label">Location</span><span class="row-val">After Relief Valve tee (⑧) and Check Valve CV-1 (④), before BV-1 (⑨) and vessel</span></div>
+      <div class="card-row"><span class="row-label">Inlet</span><span class="row-val">CV-1 outlet / RV-1 tee</span></div>
+      <div class="card-row"><span class="row-label">Outlet</span><span class="row-val">BV-1 (⑨) → PT-1 tee (⑤) → PARR vessel</span></div>
       <div class="card-row"><span class="row-label">Motor</span><span class="row-val">NEMA 17 stepper (⑰) bolts to valve body via custom bracket. 5mm→1/4" flex coupler connects motor shaft to 1/4" valve stem.</span></div>
       <div class="card-row"><span class="row-label">Control</span><span class="row-val">A4988 driver: STEP←GPIO17, DIR←GPIO27, EN←GPIO22 (active LOW)</span></div>
     </div>
@@ -795,7 +789,7 @@ a { color: var(--accent); }
       <span class="status-chip fluid">BUY — FLUID</span>
     </div>
     <div class="card-rows">
-      <div class="card-row"><span class="row-label">Location</span><span class="row-val">Tee branch between MNV-1 and BV-2 (or on the vessel outlet port)</span></div>
+      <div class="card-row"><span class="row-label">Location</span><span class="row-val">Tee branch between CV-1 (④) and MNV-1 (⑦) — on the supply side, vents left to hood</span></div>
       <div class="card-row"><span class="row-label">Outlet</span><span class="row-val">Vent line → fume hood or safe exhaust point</span></div>
       <div class="card-row"><span class="row-label">Set pressure</span><span class="row-val">4,350 PSI (30 MPa) — specify when ordering from Swagelok distributor</span></div>
     </div>
