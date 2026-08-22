@@ -20,7 +20,6 @@ import platform
 import sys
 import threading
 import time
-import tkinter as tk
 from pathlib import Path
 
 # Add parent directory so imports work when running from inside pressure_control/
@@ -115,9 +114,28 @@ def control_loop(hardware, sm, shared, logger, cloud):
     log.info("Control loop stopped.")
 
 
+def headless_loop(shared, sm):
+    """Print live readings to terminal when running without a display."""
+    print("\n  Press Ctrl+C to stop.\n")
+    print(f"  {'STATE':<16} {'PRESSURE':>10} {'TEMP':>8} {'SETPOINT':>10} {'VALVE':>7}")
+    print("  " + "─" * 57)
+    while not stop_event.is_set():
+        with shared.lock:
+            state    = shared.state
+            pressure = shared.pressure
+            temp     = shared.temperature
+            setpoint = shared.setpoint
+            valve    = shared.valve_pct
+        state_name = state.name if state is not None else "—"
+        print(f"  {state_name:<16} {pressure:>9.3f}M {temp:>7.2f}°C {setpoint:>9.3f}M {valve:>6.1f}%", end="\r")
+        time.sleep(0.5)
+
+
 def main():
     global stop_event
     stop_event = threading.Event()
+
+    headless = "--headless" in sys.argv or "DISPLAY" not in __import__("os").environ
 
     # ── Hardware ──────────────────────────────────────────────────────────────
     hardware = build_hardware()
@@ -148,19 +166,29 @@ def main():
     )
     ctrl_thread.start()
 
-    # ── GUI (runs on main thread) ─────────────────────────────────────────────
-    from gui import App
-    root = tk.Tk()
-    root.protocol("WM_DELETE_WINDOW", lambda: _shutdown(root, hardware, logger, cloud))
-    app = App(root, shared, sm)
-
-    log.info("GUI starting.")
-    try:
-        root.mainloop()
-    except KeyboardInterrupt:
-        pass
-    finally:
-        _shutdown(root, hardware, logger, cloud)
+    if headless:
+        # ── Headless mode — print to terminal ─────────────────────────────────
+        log.info("No display detected — running in headless mode. Ctrl+C to stop.")
+        try:
+            headless_loop(shared, sm)
+        except KeyboardInterrupt:
+            pass
+        finally:
+            _shutdown(None, hardware, logger, cloud)
+    else:
+        # ── GUI (runs on main thread) ──────────────────────────────────────────
+        import tkinter as tk
+        from gui import App
+        root = tk.Tk()
+        root.protocol("WM_DELETE_WINDOW", lambda: _shutdown(root, hardware, logger, cloud))
+        app = App(root, shared, sm)
+        log.info("GUI starting.")
+        try:
+            root.mainloop()
+        except KeyboardInterrupt:
+            pass
+        finally:
+            _shutdown(root, hardware, logger, cloud)
 
 
 def _shutdown(root, hardware, logger, cloud):
@@ -170,10 +198,11 @@ def _shutdown(root, hardware, logger, cloud):
     hardware.close()
     logger.close()
     cloud.stop()
-    try:
-        root.destroy()
-    except Exception:
-        pass
+    if root is not None:
+        try:
+            root.destroy()
+        except Exception:
+            pass
     log.info("Shutdown complete.")
 
 
