@@ -120,7 +120,7 @@ def headless_loop(shared, sm):
     print(f"  {'STATE':<16} {'PRESSURE':>10} {'TEMP':>8} {'SETPOINT':>10} {'VALVE':>7}")
     print("  " + "─" * 57)
     while not stop_event.is_set():
-        with shared.lock:
+        with shared._lock:
             state    = shared.state
             pressure = shared.pressure
             temp     = shared.temperature
