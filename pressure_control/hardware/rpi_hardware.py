@@ -37,6 +37,7 @@ class RPiHardware(HardwareBase):
         import board
         import busio
         import adafruit_ads1x15.ads1115 as ADS
+        from adafruit_ads1x15.ads1115 import P0, P1, P2, P3
         from adafruit_ads1x15.analog_in import AnalogIn
         import RPi.GPIO as GPIO
 
@@ -46,7 +47,7 @@ class RPiHardware(HardwareBase):
         self._ads = ADS.ADS1115(self._i2c)
 
         # Map integer channel numbers to ADS channel constants
-        _ch_map = {0: ADS.P0, 1: ADS.P1, 2: ADS.P2, 3: ADS.P3}
+        _ch_map = {0: P0, 1: P1, 2: P2, 3: P3}
         self._ch_press = AnalogIn(self._ads, _ch_map[ADS_PRESSURE_CHANNEL])
         self._ch_temp  = AnalogIn(self._ads, _ch_map[ADS_TEMP_CHANNEL])
 
