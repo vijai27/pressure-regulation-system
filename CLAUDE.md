@@ -40,11 +40,14 @@ All cylinders are from Metro Welding Supply, Detroit MI 48223.
 - Schematic diagram (`scCO2_Schematic.png`) — P&ID style
 - `install_dependencies.py` — one-shot setup for Windows and macOS
 - `make_ppt.js` / `make_schematic.py` — regenerate deliverables
+- **`hardware/rpi_hardware.py` — COMPLETE** (ADS1115 integer channels fixed, SIMULATION=False, all GPIO BCM wiring done)
+- **RPi electronics confirmed working** — ADS1115 I²C reads, A4988 + NEMA17 stepping, E-stop (GPIO23 NC, PUD_UP)
+- **Vessel port thread type confirmed** — HF4 cone-and-thread (9/16-18 straight thread, 60° cone). NOT NPT. 1/4" NPT male physically non-fitting (confirmed in lab).
+- **Vessel-end pipeline confirmed safe** — see Confirmed Plumbing section below
 
 ### 🔴 Immediate Next (blocking hardware deployment)
-1. **Fill in `rpi_hardware.py`** — it is a stub with `raise NotImplementedError` everywhere.
-   All the code is commented out inside each method. Just uncomment and fix imports.
-   Needs: `adafruit-circuitpython-ads1x15`, `RPi.GPIO`, `adafruit-blinka`
+1. **Order plumbing fittings** — see "Parts Still to Buy" below. Call HiP (814-838-2028)
+   and PARR (309-762-7716) first.
 
 2. **Re-tune HOLD PID gains** — PR-EOS shows a 0.01°C flicker moves pressure by
    3.5–4.7 kPa at 20–28 MPa (5–6× more than ideal gas predicted). Run simulation
@@ -260,47 +263,109 @@ b     = 2.664e-5     (m³/mol, computed from Tc/Pc)
 
 ---
 
-## Completing `rpi_hardware.py` (next hardware task)
+## rpi_hardware.py — DONE (completed Sep 2026)
 
-The file has all code written but commented out. Steps:
-1. On RPi: `pip install adafruit-circuitpython-ads1x15 adafruit-blinka RPi.GPIO`
-2. In `rpi_hardware.py`: uncomment everything in `__init__`, remove `raise NotImplementedError`
-3. Fix each method — all code is already written in comments
-4. Key wiring:
-   - ADS1115 A0: pressure transducer 4–20 mA via 250 Ω shunt → 1–5 V
-   - ADS1115 A1: thermocouple amplifier 0–5 V → 0–100°C
-   - GPIO 17 (BCM): stepper STEP
-   - GPIO 27 (BCM): stepper DIR
-   - GPIO 22 (BCM): stepper ENABLE (active LOW)
-   - GPIO 18 (BCM): solenoid PWM (hardware PWM channel 0)
-   - GPIO 23 (BCM): E-stop (NC, pulled HIGH, LOW when pressed)
+Key fixes applied:
+- ADS1115: pass integer channel number directly to `AnalogIn(ads, 0)` not `ADS.P0`
+  (ADS.P0 not exported in newer adafruit-circuitpython-ads1x15)
+- `SIMULATION = False` on RPi
+- All GPIO BCM wiring confirmed:
+  - GPIO 17 (Pin 11): stepper STEP
+  - GPIO 27 (Pin 13): stepper DIR
+  - GPIO 22 (Pin 15): stepper ENABLE (active LOW)
+  - GPIO 18 (Pin 12): solenoid PWM (1 Hz carrier, hardware PWM channel 0)
+  - GPIO 23 (Pin 16): E-stop (NC button, PUD_UP; LOW when pressed)
+- A4988: MS1/MS2/MS3 all HIGH → 1/16 microstep → 3200 steps/rev
+  RESET + SLEEP tied to 3.3V together to wake driver
+
+## Confirmed Plumbing — Vessel End (Sep 2026)
+
+**CRITICAL: PARR vessel ports are HF4 cone-and-thread, NOT NPT.**
+1/4" NPT male physically does not fit vessel port (confirmed in lab).
+HF4 = 9/16-18 UNF straight thread, 60° male/female cone seat.
+
+**Do NOT attempt to use HM4 cone into an NPT female thread.** The cone tip can
+physically enter an NPT bore but makes zero seal — catastrophic failure at pressure.
+All HiP-to-NPT transitions require a proper dual-geometry adapter.
+
+### Confirmed Vessel-End Pipeline (safe at 4,060 PSI operating):
+
+```
+PARR vessel HF4 port
+  ← 15-21AF2HM4 (HM4 male cone into vessel HF4 port; AF2 gland holds 1/8" OD tube)
+    [1/8" tube runs out from AF2 gland]
+  ← HM4 cone of 15-21AF2HM4 seats into →
+  → 10-21AF4NMB (HF4 female cone seat receives HM4 cone | NMB = male NPT out)
+  → SS-400-7-4 (1/4" female NPT receives NMB male NPT | 1/4" OD tube out)
+    ⚠ ORDER SS-400-7-4 with NO "RT" suffix — RT = BSPT (wrong, non-US)
+  → 1/4" OD × 0.065" wall 316SS tubing
+  → Union (SS-400-6)
+```
+
+All joints ≥ 10,000 PSI rated. Operating pressure 4,060 PSI = safe margin > 2×.
+
+### Pressure Transducer Connection (separate vessel port):
+
+```
+PARR vessel HF4 port (transducer port)
+  ← CN4HM4NF15 (HM4 male cone into vessel HF4 | 1/4" female NPT out)
+  ← Ashcroft K4708 transducer 1/4" MNPT screws into CN4HM4NF15 FNPT
+```
+
+### Supply Side (HiP valve → Swagelok system):
+
+```
+HiP BV-1 HF4 port
+  ← CN4HM4NF15 (HM4 cone into BV-1 HF4 port | 1/4" FNPT out)
+  → SS-400-1-4 (1/4" MNPT into CN4HM4NF15 FNPT | 1/4" OD tube out)
+  → Swagelok 1/4" compression system
+```
+
+### Parts to call/order (not yet in hand):
+
+| Part | Source | Notes |
+|---|---|---|
+| HiP 10-21AF4NMB | HiP 814-838-2028 | Confirm "NMB" = male NPT and NPT size |
+| CN4HM4NF15 × 2 | HiP 814-838-2028 | One for transducer port, one for supply valve |
+| SS-400-7-4 | Swagelok | NO "RT" suffix. Female connector 1/4" tube × 1/4" FNPT |
+| SS-400-1-4 | Swagelok | Male connector 1/4" tube × 1/4" MNPT |
+
+### Key phone numbers:
+
+- **HiP** (High Pressure Equipment): **814-838-2028**, Erie PA
+- **PARR Instrument**: **309-762-7716**, Moline IL — call to confirm 2302HC port thread spec (HF4 9/16-18 confirmation before torquing)
+- **Kinequip** (HiP distributor): **716-874-8001** — often ships same/next day
 
 ---
 
 ## Parts Still to Buy
 
-### Grainger
+### Already In Hand (do not re-order)
+- Raspberry Pi 4, ADS1115, NEMA17, A4988 ×1 (×2 bought, 1 burned), relay, Dayton PSU
+- HiP 30-11HF4 (BV-1 supply ball valve)
+- HiP 15-21AF2HM4 (HT#505044) — vessel adapter, 1/8" AF2 tube × HM4 cone
+- 316SS tubing 1/4" OD × 0.065" wall (in hand)
+- Swagelok SS-400-6 unions, SS-400-3 tee, SS-400-C cap (ordered)
+
+### Call HiP First (814-838-2028) — Kinequip also: 716-874-8001
+- **HiP 10-21AF4NMB** — HF4 female | NMB male NPT. Confirm NPT size. Order.
+- **CN4HM4NF15 × 2** — HM4 cone × 1/4" FNPT. One for transducer port, one for supply valve.
+
+### Swagelok
+- **SS-400-7-4** — female connector, 1/4" OD tube × 1/4" FNPT. **NO "RT" suffix.**
+- **SS-400-1-4** — male connector, 1/4" OD tube × 1/4" MNPT
+
+### Grainger (if not yet ordered)
 - Ashcroft PT transducer 0–5000 PSI 4–20 mA (K4708) ~$400
 - Ashcroft pressure gauge 0–5000 PSI (K4201) ~$100
 - Parker relief valve SS316 1/4" MNPT (442F42) ~$165
-- Dayton DIN rail PSU 24VDC 50W (33NT20) ~$55
-- DIN rail relay 24VDC coil ~$20
 - PTFE tape (34P209) ~$5
+- RIDGID 29963 SS tube cutter (mini rotary cutter necks 316SS ID — do not use)
 
-### Amazon
-- Raspberry Pi 4 (4GB) ~$55
-- ADS1115 ADC module ~$10
-- NEMA 17 stepper motor ~$15
-- A4988 stepper driver ~$8
-- 32 GB microSD card ~$10
-- Relay module 24VDC ~$10
-
-### High Pressure (Swagelok / Parker / HIP)
-- Motorized needle valve, SS, 1/4" tube, >5000 PSI ~$400
-- Check valve SS316 1/4" tube >5000 PSI ~$150
-- Manual ball valves ×3, SS, 1/4" tube >5000 PSI ~$300
-- SS tubing 1/4" OD × 0.065" wall 316SS 10 ft ~$80
-- Swagelok compression fittings assorted ~$200
+### Still Needed
+- Clark Cooper EX40 motorized needle valve — ordered, 10-week lead time
+- Shaft coupler (5mm → valve stem OD) + motor mount for NEMA17 → needle valve
+- 250 Ω precision shunt resistor (4–20 mA → 1–5 V for ADS1115 A0)
 
 ---
 
